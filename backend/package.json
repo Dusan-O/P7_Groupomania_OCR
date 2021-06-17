@@ -23,6 +23,7 @@
     "querystring": "^0.2.0",
     "sanitize-middleware": "^4.0.4",
     "sequelize": "^6.6.2",
-    "validator": "^13.5.2"
+    "validator": "^13.5.2",
+    "vue": "^2.6.14"
   }
 }

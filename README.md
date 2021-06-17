@@ -1,3 +1,1 @@
-# Projet numéro 7 : Créez un réseau social d’entreprise
-
-
+OPENCLASSROOMS PROJECT 7 GROUPOMANIA - WEB DEVELOPPER
