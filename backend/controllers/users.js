@@ -1,6 +1,6 @@
 require('dotenv').config();      // importation du paquet dotenv pour les variables d'environnement
 const validator = require("validator");     // importation du paquet validator
-const mysql = require('mysql');       // importation du paquet mysql
+const mysql = require('mysql2');       // importation du paquet mysql
 const bcrypt = require ('bcrypt');       // importation du paquet bcrypt
 const jwt = require('jsonwebtoken');        // importation du paquet jwt
 

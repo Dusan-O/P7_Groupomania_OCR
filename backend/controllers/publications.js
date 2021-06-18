@@ -1,35 +1,35 @@
-require('dotenv').config();      // importation du paquet dotenv pour les variables d'environnement
-const fs = require('fs');       // importation du paquet node js (gestion des fichiers système)
-const mysql = require('mysql');       // importation du paquet mysql
-const jwt = require('jsonwebtoken');        // importation du paquet jwt
-const querystring = require('querystring');     // importation du paquer querystring
+require('dotenv').config();      // IMPORT DOTENV
+const fs = require('fs');       // IMPORT NODE JS
+const mysql = require('mysql2');       // IMPORT MYSQL
+const jwt = require('jsonwebtoken');        // IMPORT JWT
+const querystring = require('querystring');     // IMPORT QUERYSTRING
 
-const bdd = require("../bdd_config/bdd_connexion");     // importation de la connexion a la base de données
+const bdd = require("../bdd_config/bdd_connexion");     // IMPORT CONNEXTION DATABASE
 
 
-let decodeToken = function(req){                                                    // fonction qui décode le token et récupère le UserID et le niveau d'acces
-    let token = req.headers.authorization.split(' ')[1];                            // on récupère uniquement le token du header de la requête
-    let decodedToken = jwt.verify(token, process.env.JWT_AUTH_SECRET_TOKEN);        // on décode le token avec la fonction verify qui prend le token et la clé secrète
-    decodedToken = [decodedToken.userId, decodedToken.niveau_acces];                // on récupère le niveau d'acces du token décodé
-    return decodedToken;                                                            // on retourne un tableau avec le UserId et le niveau d'acces
+let decodeToken = function(req){                                                    // DECODE TOKEN & GET USER ID
+    let token = req.headers.authorization.split(' ')[1];                            // GET TOKEN FROM REQUEST HEADER
+    let decodedToken = jwt.verify(token, process.env.JWT_AUTH_SECRET_TOKEN);        // DECODE TOKEN WITH VERIFY
+    decodedToken = [decodedToken.userId, decodedToken.niveau_acces];                // GET TOKEN ACCESS LEVEL
+    return decodedToken;                                                            // RETURN TABLE WITH USERID AND ACCESS LEVEL
 }
 
-
+// CREATE PUBLICATION
 exports.createPublication = (req, res, next) => {
 
-    const tokenInfos = decodeToken(req);        // on utilise la fonction decodeToken
-    const userId = tokenInfos[0];               // on obtient le UserId du token
+    const tokenInfos = decodeToken(req);        // DECODETOKEN FUNCTION
+    const userId = tokenInfos[0];               // GET TOKEN'S USER ID
 
-    const titre = req.body.titre;               // on récupère le titre de la publication
-    const description = req.body.description;   // on récupère la description de la publication
+    const titre = req.body.titre;               // GET TITLE POST
+    const description = req.body.description;   // GET DESCRIPTION POST
 
-    if (req.file !== undefined) {                                                               // si une image est trouvée
-        const imageUrl = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;    // on paramètre son url
-        let sql = "INSERT INTO publications (user_id, titre, description, image_url) VALUES (?, ?, ?, ? )";     // préparation de la requete SQL
-        let inserts = [userId, titre, description, imageUrl];                                                   // utilisation des valeurs à insérer
-        sql = mysql.format(sql, inserts);                                                                       // assemblage final de la requête
+    if (req.file !== undefined) {                                                               // IF IMAGE
+        const imageUrl = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;    // PARAM THE URL
+        let sql = "INSERT INTO publications (user_id, titre, description, image_url) VALUES (?, ?, ?, ? )";     // PREPARATION SQL REQUEST
+        let inserts = [userId, titre, description, imageUrl];                                                   // USE VALUES
+        sql = mysql.format(sql, inserts);                                                                       
 
-        const publicationCreate = bdd.query(sql, (error, publication) => {                                      // envoi de la requête a la base de données
+        const publicationCreate = bdd.query(sql, (error, publication) => {                                      // SEND REQUEST TO DB
             if (!error) {
                 res.status(201).json({ message: "Publication enregistrée" });
             } else {
@@ -37,12 +37,12 @@ exports.createPublication = (req, res, next) => {
             }
         });
     } else {
-        const imageUrl = "";  // si aucune image alors on laisse le champ vide
-        let sql = "INSERT INTO publications (user_id, titre, description, image_url) VALUES (?, ?, ?, ? )";     // préparation de la requete SQL
-        let inserts = [userId, titre, description, imageUrl];                                                   // utilisation des valeurs à insérer
-        sql = mysql.format(sql, inserts);                                                                       // assemblage final de la requête
+        const imageUrl = "";  // IF NO IMAGE THEN EMPTY
+        let sql = "INSERT INTO publications (user_id, titre, description, image_url) VALUES (?, ?, ?, ? )";     // PREPARATION SQL REQUEST
+        let inserts = [userId, titre, description, imageUrl];                                                   // USE VALUES
+        sql = mysql.format(sql, inserts);                                                                       
 
-        const publicationCreate = bdd.query(sql, (error, publication) => {                                      // envoi de la requête a la base de données
+        const publicationCreate = bdd.query(sql, (error, publication) => {                                      // SEND REQUEST TO DB
             if (!error) {
                 res.status(201).json({ message: "Publication enregistrée" });
             } else {
@@ -52,15 +52,16 @@ exports.createPublication = (req, res, next) => {
     } 
 };
 
+// GET ALL PUBLICATIONS
 exports.getAllPublications = (req, res, next) => {
 
-    const tokenInfos = decodeToken(req);        // on utilise la fonction decodeToken
-    const userId = tokenInfos[0];               // on obtient le UserId du token
-    const page = req.query.page;                // on récupère le numéro de la page (la première page est la page 1)
-    let offset = 10;                            // offset par défaut sur 10 (limite du nombre de publication et décalage de l'offset)
+    const tokenInfos = decodeToken(req);        // DECODETOKEN
+    const userId = tokenInfos[0];               // GET TOKEN'S USERID
+    const page = req.query.page;                // GET PAGE # 
+    let offset = 10;                            // OFFSET DEFAUT 10 (LIMIT # POST)
 
-    offset = offset * (page - 1);               // on multipli l'offset par le numéro de la page -1
-
+    offset = offset * (page - 1);               // MULTIPLY OFFSET BY PAGE #
+    
     let sql = `SELECT   user.id AS publicationCreateByUserId,
                         user.nom AS publicationCreateByUserNom,
                         user.prenom AS publicationCreateByUserPrenom,
@@ -100,14 +101,15 @@ exports.getAllPublications = (req, res, next) => {
     });
 };
 
+// GET MOST RECENT PUBLICATIONS
 exports.getMostRecentPublications = (req, res, next) => {
 
-    const tokenInfos = decodeToken(req);        // on utilise la fonction decodeToken
-    const userId = tokenInfos[0];               // on obtient le UserId du token
-    const page = req.query.page;                // on récupère le numéro de la page (la première page est la page 1)
-    let offset = 10;                            // offset par défaut sur 10 (limite du nombre de publication et décalage de l'offset)
+    const tokenInfos = decodeToken(req);        // DECODETOKEN
+    const userId = tokenInfos[0];               // TOKEN'S USERID
+    const page = req.query.page;                
+    let offset = 10;                            
 
-    offset = offset * (page - 1);               // on multipli l'offset par le numéro de la page -1
+    offset = offset * (page - 1);               
 
     let sql = `SELECT   user.id AS publicationCreateByUserId,
                         user.nom AS publicationCreateByUserNom,
@@ -148,14 +150,15 @@ exports.getMostRecentPublications = (req, res, next) => {
     });
 };
 
+// GET MOST LIKED PUBLICATIONS
 exports.getMostLikedPublications = (req, res, next) => {
 
-    const tokenInfos = decodeToken(req);        // on utilise la fonction decodeToken
-    const userId = tokenInfos[0];               // on obtient le UserId du token
-    const page = req.query.page;                // on récupère le numéro de la page (la première page est la page 1)
-    let offset = 10;                            // offset par défaut sur 10 (limite du nombre de publication et décalage de l'offset)
+    const tokenInfos = decodeToken(req);        
+    const userId = tokenInfos[0];               
+    const page = req.query.page;                
+    let offset = 10;                            
 
-    offset = offset * (page - 1);               // on multipli l'offset par le numéro de la page -1
+    offset = offset * (page - 1);               
 
     let sql = `SELECT   user.id AS publicationCreateByUserId,
                         user.nom AS publicationCreateByUserNom,
@@ -196,14 +199,15 @@ exports.getMostLikedPublications = (req, res, next) => {
     });
 };
 
+// GET MOST COMMENTED PUBLICATIONS
 exports.getMostCommentedPublications = (req, res, next) => {
 
-    const tokenInfos = decodeToken(req);        // on utilise la fonction decodeToken
-    const userId = tokenInfos[0];               // on obtient le UserId du token
-    const page = req.query.page;                // on récupère le numéro de la page (la première page est la page 1)
-    let offset = 10;                            // offset par défaut sur 10 (limite du nombre de publication et décalage de l'offset)
+    const tokenInfos = decodeToken(req);        
+    const userId = tokenInfos[0];               
+    const page = req.query.page;                
+    let offset = 10;                            
 
-    offset = offset * (page - 1);               // on multipli l'offset par le numéro de la page -1
+    offset = offset * (page - 1);               
 
     let sql = `SELECT   user.id AS publicationCreateByUserId,
                         user.nom AS publicationCreateByUserNom,
@@ -244,10 +248,11 @@ exports.getMostCommentedPublications = (req, res, next) => {
     });
 };
 
+// GET ONE USER ALL PUBLICATIONS
 exports.getOneUserAllPublications = (req, res, next) => {
 
-    const tokenInfos = decodeToken(req);        // on utilise la fonction decodeToken
-    const userId = tokenInfos[0];               // on obtient le UserId du token
+    const tokenInfos = decodeToken(req);        
+    const userId = tokenInfos[0];               
 
     let sql = `SELECT   user.id AS publicationCreateByUserId,
                         user.nom AS publicationCreateByUserNom,
@@ -281,11 +286,12 @@ exports.getOneUserAllPublications = (req, res, next) => {
     });
 };
 
+// GET ONE PUBLICATION
 exports.getOnePublication = (req, res, next) => {
 
-    const tokenInfos = decodeToken(req);        // on utilise la fonction decodeToken
-    const userId = tokenInfos[0];               // on obtient le UserId du token
-    const publicationId = req.params.id;        // récupération de l'ID de la publication
+    const tokenInfos = decodeToken(req);        
+    const userId = tokenInfos[0];               
+    const publicationId = req.params.id;        
 
     const sqlPublication = `SELECT  user.id AS publicationCreateByUserId,
                                     user.nom AS publicationCreateByUserNom,
@@ -346,29 +352,30 @@ exports.getOnePublication = (req, res, next) => {
     });
 };
 
+// DELETE PUBLICATION
 exports.deletePublication = (req, res, next) => {
 
-    const tokenInfos = decodeToken(req);                                // on utilise la fonction decodeToken
-    const userId = tokenInfos[0];                                       // on obtient le UserId du token
-    const niveauAcces = tokenInfos[1];                                  // on obtient le niveau d'acces du token
-    const publicationId = req.params.id;                                // on récupère l'id de la publication
+    const tokenInfos = decodeToken(req);                                
+    const userId = tokenInfos[0];                                       
+    const niveauAcces = tokenInfos[1];                                  
+    const publicationId = req.params.id;                                
 
-    if (niveauAcces === 1) {                                                    // si le niveau d'acces est 1 (Modérateur)
+    if (niveauAcces === 1) {                                                    // IF LEVEL ACCESS 1 (ADMIN)
         let firstSql = "SELECT image_url FROM publications WHERE id = ?;"
-        let secondSql = "DELETE FROM publications WHERE id = ?;";                      // préparation de la requete SQL
-        let inserts = [publicationId];                                          // utilisation des valeurs à insérer
-        firstSql = mysql.format(firstSql, inserts);                                       // assemblage final de la requête
-        secondSql = mysql.format(secondSql, inserts);                                       // assemblage final de la requête
+        let secondSql = "DELETE FROM publications WHERE id = ?;";               // PREPARATION MYSQL REQUEST
+        let inserts = [publicationId];                                          // USE VALUES TO INSERT
+        firstSql = mysql.format(firstSql, inserts);                             
+        secondSql = mysql.format(secondSql, inserts);                           
         let role = "Modérateur";
 
-        const publicationImageUrl = bdd.query(firstSql, (error, image) => {               // envoi de la requête a la base de données
+        const publicationImageUrl = bdd.query(firstSql, (error, image) => {     // SEND REQUEST TO DB
             if (!error) {
                 if(image[0].image_url !== "") {
-                    const filename = image[0].image_url.split("/images/")[1];           // on extrait le nom du fichier à supprimer
-                    fs.unlink(`images/${filename}`, () => {                        // on supprime le fichier grâce à fs.unlink
+                    const filename = image[0].image_url.split("/images/")[1];   // EXTRACT FILE NAME TO DELETE
+                    fs.unlink(`images/${filename}`, () => {                     // DELETE WITH FS.UNLINK
                     });
                 }
-                const publicationDelete = bdd.query(secondSql, (error, result) => {               // envoi de la requête a la base de données
+                const publicationDelete = bdd.query(secondSql, (error, result) => {   // SEND REQUEST TO DB
                     if (!error) {
                         if (result.affectedRows === 0) {
                             res.status(400).json({ message: "Vous n'êtes pas autorisé à supprimer cette publication !" });
@@ -385,21 +392,21 @@ exports.deletePublication = (req, res, next) => {
         });
     } else {          
         let firstSql = "SELECT image_url FROM publications WHERE id = ?;"
-        let secondSql = "DELETE FROM publications WHERE id = ? AND user_id = ?;";                      // préparation de la requete SQL
-        let firstInserts = [publicationId];                                          // utilisation des valeurs à insérer
+        let secondSql = "DELETE FROM publications WHERE id = ? AND user_id = ?;";    // PREPARATION SQL REQUEST
+        let firstInserts = [publicationId];                                          
         let secondInserts = [publicationId, userId]; 
-        firstSql = mysql.format(firstSql, firstInserts);                                       // assemblage final de la requête
-        secondSql = mysql.format(secondSql, secondInserts);                                       // assemblage final de la requête
+        firstSql = mysql.format(firstSql, firstInserts);                                       
+        secondSql = mysql.format(secondSql, secondInserts);                                       
         let role = "Utilisateur";
 
-        const publicationImageUrl = bdd.query(firstSql, (error, image) => {               // envoi de la requête a la base de données
+        const publicationImageUrl = bdd.query(firstSql, (error, image) => {          // SEND REQUEST TO DB
             if (!error) {
                 if(image[0].image_url !== "") {
-                    const filename = image[0].image_url.split("/images/")[1];           // on extrait le nom du fichier à supprimer
-                    fs.unlink(`images/${filename}`, () => {                        // on supprime le fichier grâce à fs.unlink
+                    const filename = image[0].image_url.split("/images/")[1];           
+                    fs.unlink(`images/${filename}`, () => {                        
                     });
                 }
-                const publicationDelete = bdd.query(secondSql, (error, result) => {               // envoi de la requête a la base de données
+                const publicationDelete = bdd.query(secondSql, (error, result) => {         // SEND REQUEST TO DB
                     if (!error) {
                         if (result.affectedRows === 0) {
                             res.status(400).json({ message: "Vous n'êtes pas autorisé à supprimer cette publication !" });
@@ -417,19 +424,20 @@ exports.deletePublication = (req, res, next) => {
     }
 };
 
+// COMMENT PUBLICATION
 exports.commentPublication = (req, res, next) => {
 
-    const tokenInfos = decodeToken(req);                                // on utilise la fonction decodeToken
-    const userId = tokenInfos[0];                                       // on obtient le UserId du token
+    const tokenInfos = decodeToken(req);                                
+    const userId = tokenInfos[0];                                      
     
-    const publicationId = req.body.publicationId;                       // on récupère l'id de la publication
-    const message = req.body.message;                                    // on extrait le message du commentaire
+    const publicationId = req.body.publicationId;                       
+    const message = req.body.message;                                    
 
-    let sql = "INSERT INTO commentaires (user_id, publication_id, message) VALUES (?, ?, ?)";   // préparation de la requete SQL
-    let inserts = [userId, publicationId, message];                                             // utilisation des valeurs à insérer
-    sql = mysql.format(sql, inserts);                                                           // assemblage final de la requête
+    let sql = "INSERT INTO commentaires (user_id, publication_id, message) VALUES (?, ?, ?)";   
+    let inserts = [userId, publicationId, message];                                             
+    sql = mysql.format(sql, inserts);                                                           
 
-    const commentaireCreate = bdd.query(sql, (error, result) => {                               // envoi de la requête a la base de données
+    const commentaireCreate = bdd.query(sql, (error, result) => {                               
         if (!error) {
             res.status(201).json({ message: "Le commentaire a bien été créé" });
         } else {
@@ -438,34 +446,35 @@ exports.commentPublication = (req, res, next) => {
     });
 };
 
+// DELETE COMMENT
 exports.deleteComment = (req, res, next) => {
     
-    const tokenInfos = decodeToken(req);                                // on utilise la fonction decodeToken
-    const userId = tokenInfos[0];                                       // on obtient le UserId du token
-    const niveauAcces = tokenInfos[1];                                  // on obtient le niveau d'acces du token
+    const tokenInfos = decodeToken(req);                                
+    const userId = tokenInfos[0];                                       
+    const niveauAcces = tokenInfos[1];                                  
 
-    const commentaireId = req.params.id;                                // on récupère l'id du commentaire
+    const commentaireId = req.params.id;                                
 
-    if (niveauAcces === 1) {                                                    // si le niveau d'acces est 1 (Modérateur)
-        let sql = "DELETE FROM commentaires WHERE id = ?";                      // préparation de la requete SQL
-        let inserts = [commentaireId];                                          // utilisation des valeurs à insérer
-        sql = mysql.format(sql, inserts);                                       // assemblage final de la requête
+    if (niveauAcces === 1) {                                                    
+        let sql = "DELETE FROM commentaires WHERE id = ?";                      
+        let inserts = [commentaireId];                                          
+        sql = mysql.format(sql, inserts);                                       
         let role = "Modérateur";
 
-        const commentaireDelete = bdd.query(sql, (error, result) => {               // envoi de la requête a la base de données
+        const commentaireDelete = bdd.query(sql, (error, result) => {               
             if (!error) {
                 res.status(200).json({ message: "Le commentaire a été supprimé !" + " (" + role + ")" });
             } else {
                 res.status(400).json({ message: "Une erreur est survenue, le commentaire n'a pas été supprimé" });
             }
         });
-    } else {                                                                    // sinon
-        let sql = "DELETE FROM commentaires WHERE id = ? AND user_id = ?";      // préparation de la requete SQL
-        let inserts = [commentaireId, userId];                                  // utilisation des valeurs à insérer
-        sql = mysql.format(sql, inserts);                                       // assemblage final de la requête
+    } else {                                                                   
+        let sql = "DELETE FROM commentaires WHERE id = ? AND user_id = ?";      
+        let inserts = [commentaireId, userId];                                  
+        sql = mysql.format(sql, inserts);                                       
         let role = "Utilisateur";
 
-        const commentaireDelete = bdd.query(sql, (error, result) => {               // envoi de la requête a la base de données
+        const commentaireDelete = bdd.query(sql, (error, result) => {               
             if (!error) {
                 if (result.affectedRows === 0) {
                     res.status(400).json({ message: "Vous n'êtes pas autorisé à supprimer ce commentaire !" });
@@ -479,23 +488,24 @@ exports.deleteComment = (req, res, next) => {
     }
 };
 
+// VOTE PUBLICATION
 exports.votePublication = (req, res, next) => {
 
-    const tokenInfos = decodeToken(req);                                // on utilise la fonction decodeToken
-    const userId = tokenInfos[0];                                       // on obtient le UserId du token
+    const tokenInfos = decodeToken(req);                                
+    const userId = tokenInfos[0];                                       
 
-    const publicationId = req.body.publicationId;                       // on récupère l'id de la publication
-    const vote = req.body.vote;                                         // on récupère le vote
-    const alreadyVote = req.body.alreadyVote;                           // on récupère l'info si l'utilisateur a déjà voté la publication
+    const publicationId = req.body.publicationId;                       
+    const vote = req.body.vote;                                         
+    const alreadyVote = req.body.alreadyVote;                           
 
     switch (vote) {
-        case 1 : // Vote null sur la publication (No like/ No dislike)
+        case 1 : // NO LIKE / NO DISLIKE
             try {
-                let sql = "UPDATE votes SET vote = 1 WHERE publication_id = ? AND user_id = ?";     // préparation de la requete SQL
-                let inserts = [publicationId, userId];                                              // utilisation des valeurs à insérer
-                sql = mysql.format(sql, inserts);                                                   // assemblage final de la requête
+                let sql = "UPDATE votes SET vote = 1 WHERE publication_id = ? AND user_id = ?";     
+                let inserts = [publicationId, userId];                                              
+                sql = mysql.format(sql, inserts);                                                   
 
-                const voteNullUpdate = bdd.query(sql, (error, result) => {                          // envoi de la requête a la base de données
+                const voteNullUpdate = bdd.query(sql, (error, result) => {                          
                     if (error) {
                         res.status(400).json({ error: "La modification de votre vote a échouée ! (null)" });
                     } else {
@@ -507,14 +517,14 @@ exports.votePublication = (req, res, next) => {
             }
             break;
 
-        case 2 : // Vote like sur la publication
+        case 2 : // LIKE
             try {
-                if (alreadyVote) {                                                                      // si l'utilisateur a déjà voté sur cette publication
-                    let sql = "UPDATE votes SET vote = 2 WHERE publication_id = ? AND user_id = ?";     // préparation de la requete SQL
-                    let inserts = [publicationId, userId];                                              // utilisation des valeurs à insérer
-                    sql = mysql.format(sql, inserts);                                                   // assemblage final de la requête
+                if (alreadyVote) {                                                                      
+                    let sql = "UPDATE votes SET vote = 2 WHERE publication_id = ? AND user_id = ?";     
+                    let inserts = [publicationId, userId];                                              
+                    sql = mysql.format(sql, inserts);                                                   
 
-                    const voteLikeUpdate = bdd.query(sql, (error, result) => {                              // envoi de la requête a la base de données
+                    const voteLikeUpdate = bdd.query(sql, (error, result) => {                              
                         if (error) {
                             res.status(400).json({ error: "La modification de votre vote a échouée ! (like)" });
                         } else {
@@ -522,11 +532,11 @@ exports.votePublication = (req, res, next) => {
                         }
                     });
                 } else {
-                    let sql = "INSERT INTO votes (publication_id, user_id, vote) VALUES (?, ?, 2)";     // préparation de la requete SQL
-                    let inserts = [publicationId, userId];                                              // utilisation des valeurs à insérer
-                    sql = mysql.format(sql, inserts);                                                   // assemblage final de la requête
+                    let sql = "INSERT INTO votes (publication_id, user_id, vote) VALUES (?, ?, 2)";     
+                    let inserts = [publicationId, userId];                                              
+                    sql = mysql.format(sql, inserts);                                                   
 
-                    const voteLikeUpdate = bdd.query(sql, (error, result) => {                              // envoi de la requête a la base de données
+                    const voteLikeUpdate = bdd.query(sql, (error, result) => {                              
                         if (error) {
                             res.status(400).json({ error: "La modification de votre vote a échouée ! (like)" });
                         } else {
@@ -539,14 +549,14 @@ exports.votePublication = (req, res, next) => {
             }
             break;
 
-        case 3 : // Vote dislike sur la publication
+        case 3 : // DISLIKE
             try {
-                if (alreadyVote) {                                                                      // si l'utilisateur a déjà voté sur cette publication
-                    let sql = "UPDATE votes SET vote = 3 WHERE publication_id = ? AND user_id = ?";     // préparation de la requete SQL
-                    let inserts = [publicationId, userId];                                              // utilisation des valeurs à insérer
-                    sql = mysql.format(sql, inserts);                                                   // assemblage final de la requête
+                if (alreadyVote) {                                                                      
+                    let sql = "UPDATE votes SET vote = 3 WHERE publication_id = ? AND user_id = ?";     
+                    let inserts = [publicationId, userId];                                              
+                    sql = mysql.format(sql, inserts);                                                   
 
-                    const voteLikeUpdate = bdd.query(sql, (error, result) => {                              // envoi de la requête a la base de données
+                    const voteLikeUpdate = bdd.query(sql, (error, result) => {                              
                         if (error) {
                             res.status(400).json({ error: "La modification de votre vote a échouée ! (dislike)" });
                         } else {
@@ -554,11 +564,11 @@ exports.votePublication = (req, res, next) => {
                         }
                     });
                 } else {
-                    let sql = "INSERT INTO votes (publication_id, user_id, vote) VALUES (?, ?, 3)";     // préparation de la requete SQL
-                    let inserts = [publicationId, userId];                                              // utilisation des valeurs à insérer
-                    sql = mysql.format(sql, inserts);                                                   // assemblage final de la requête
+                    let sql = "INSERT INTO votes (publication_id, user_id, vote) VALUES (?, ?, 3)";     
+                    let inserts = [publicationId, userId];                                              
+                    sql = mysql.format(sql, inserts);                                                   
 
-                    const voteLikeUpdate = bdd.query(sql, (error, result) => {                              // envoi de la requête a la base de données
+                    const voteLikeUpdate = bdd.query(sql, (error, result) => {                              
                         if (error) {
                             res.status(400).json({ error: "La modification de votre vote a échouée ! (dislike)" });
                         } else {
