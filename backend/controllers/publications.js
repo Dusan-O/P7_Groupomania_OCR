@@ -1,10 +1,10 @@
-require('dotenv').config();      // IMPORT DOTENV
-const fs = require('fs');       // IMPORT NODE JS
-const mysql = require('mysql2');       // IMPORT MYSQL
-const jwt = require('jsonwebtoken');        // IMPORT JWT
-const querystring = require('querystring');     // IMPORT QUERYSTRING
+require('dotenv').config();                                                         // IMPORT DOTENV
+const fs = require('fs');                                                           // IMPORT NODE JS
+const mysql = require('mysql2');                                                    // IMPORT MYSQL
+const jwt = require('jsonwebtoken');                                                // IMPORT JWT
+const querystring = require('querystring');                                         // IMPORT QUERYSTRING
 
-const bdd = require("../bdd_config/bdd_connexion");     // IMPORT CONNEXTION DATABASE
+const bdd = require("../bdd_config/bdd_connexion");                                 // IMPORT CONNEXTION DATABASE
 
 
 let decodeToken = function(req){                                                    // DECODE TOKEN & GET USER ID
@@ -17,14 +17,14 @@ let decodeToken = function(req){                                                
 // CREATE PUBLICATION
 exports.createPublication = (req, res, next) => {
 
-    const tokenInfos = decodeToken(req);        // DECODETOKEN FUNCTION
-    const userId = tokenInfos[0];               // GET TOKEN'S USER ID
+    const tokenInfos = decodeToken(req);                                            // DECODETOKEN FUNCTION
+    const userId = tokenInfos[0];                                                   // GET TOKEN'S USER ID
 
-    const titre = req.body.titre;               // GET TITLE POST
-    const description = req.body.description;   // GET DESCRIPTION POST
+    const titre = req.body.titre;                                                   // GET TITLE POST
+    const description = req.body.description;                                       // GET DESCRIPTION POST
 
-    if (req.file !== undefined) {                                                               // IF IMAGE
-        const imageUrl = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;    // PARAM THE URL
+    if (req.file !== undefined) {                                                                               // IF IMAGE
+        const imageUrl = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;                    // PARAM THE URL
         let sql = "INSERT INTO publications (user_id, titre, description, image_url) VALUES (?, ?, ?, ? )";     // PREPARATION SQL REQUEST
         let inserts = [userId, titre, description, imageUrl];                                                   // USE VALUES
         sql = mysql.format(sql, inserts);                                                                       
@@ -37,7 +37,7 @@ exports.createPublication = (req, res, next) => {
             }
         });
     } else {
-        const imageUrl = "";  // IF NO IMAGE THEN EMPTY
+        const imageUrl = "";                                                                                    // IF NO IMAGE THEN EMPTY
         let sql = "INSERT INTO publications (user_id, titre, description, image_url) VALUES (?, ?, ?, ? )";     // PREPARATION SQL REQUEST
         let inserts = [userId, titre, description, imageUrl];                                                   // USE VALUES
         sql = mysql.format(sql, inserts);                                                                       

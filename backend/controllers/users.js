@@ -1,10 +1,10 @@
-require('dotenv').config();      // importation du paquet dotenv pour les variables d'environnement
-const validator = require("validator");     // importation du paquet validator
-const mysql = require('mysql2');       // importation du paquet mysql
-const bcrypt = require ('bcrypt');       // importation du paquet bcrypt
-const jwt = require('jsonwebtoken');        // importation du paquet jwt
+require('dotenv').config();                                                         // importation du paquet dotenv pour les variables d'environnement
+const validator = require("validator");                                             // importation du paquet validator
+const mysql = require('mysql2');                                                    // importation du paquet mysql
+const bcrypt = require ('bcrypt');                                                  // importation du paquet bcrypt
+const jwt = require('jsonwebtoken');                                                // importation du paquet jwt
 
-const bdd = require("../bdd_config/bdd_connexion");     // importation de la connexion a la base de données
+const bdd = require("../bdd_config/bdd_connexion");                                 // importation de la connexion a la base de données
 
 
 let decodeToken = function(req){                                                    // fonction qui décode le token et récupère le UserID et le niveau d'acces

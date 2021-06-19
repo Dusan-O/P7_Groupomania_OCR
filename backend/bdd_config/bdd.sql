@@ -1,46 +1,46 @@
-CREATE TABLE `users` (                                                      /* Création de la table USERS */
-  `id` int PRIMARY KEY AUTO_INCREMENT,                                      /* Clé primaire => User ID */
-  `creation_date` TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP),           /* Date de création du user */
-  `nom` varchar(30) DEFAULT NULL,                                           /* Nom */
-  `prenom` varchar(30) DEFAULT NULL,                                        /* Prénom */
-  `email` varchar(60) NOT NULL UNIQUE,                                      /* Email UNIQUE (Pour éviter les doublons) */
-  `departement` varchar(30) DEFAULT NULL,                                   /* Département */
-  `poste` varchar(30) DEFAULT NULL,                                         /* Poste occupé */
-  `mot_de_passe` varchar(100) NOT NULL,                                     /* Mot de passe */
-  `niveau_acces` int DEFAULT NULL                                           /* Niveau d'accès, rôle, droit */
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=1;     /* Utilisation du moteur de table InnoDB qui permet l'utilisation des clés étrangères */
+CREATE TABLE `users` (                                                      /* CREATION TABLE USERS */
+  `id` int PRIMARY KEY AUTO_INCREMENT,                                      /* CLE PRIMAIRE => USER ID */
+  `creation_date` TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP),           /* DATE DE CREATION DU USER*/
+  `nom` varchar(30) DEFAULT NULL,                                           /* NPM */
+  `prenom` varchar(30) DEFAULT NULL,                                        /* PRENOM */
+  `email` varchar(60) NOT NULL UNIQUE,                                      /* EMAIL UNIQUE  */
+  `departement` varchar(30) DEFAULT NULL,                                   /* DEPARTEMENT */
+  `poste` varchar(30) DEFAULT NULL,                                         /* POSTE */
+  `mot_de_passe` varchar(100) NOT NULL,                                     /* MOT DE PASSE */
+  `niveau_acces` int DEFAULT NULL                                           /* NIVEAU D'ACCES, rôle, droit */
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=1;     /* TABLE INNODB (PERMET L'UTILISATION DES CLEFS ETRANGERES) */
 
 
-CREATE TABLE `publications` (                                                                                 /* Création de la table PUBLICATIONS */
-  `id` int AUTO_INCREMENT,                                                                                    /* Publication ID */
-  `user_id` int NOT NULL,                                                                                     /* User ID créateur de la publication */
-  `creation_date` TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP),                                             /* Date de création de la publication */
-  `titre` text NOT NULL,                                                                                      /* Titre */
-  `description` text NOT NULL,                                                                                /* Description */
-  `image_url` text DEFAULT NULL,                                                                              /* URL de l'image */
-  PRIMARY KEY (`id`,`user_id`),                                                                               /* Clé primaire composite => Publication ID + User ID */
-  CONSTRAINT `fk_publication_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE     /* Clé étrangère sur la colonne "user_id" qui se sert de la table "users" et de la colonne "id" comme référence */
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=1;                                       /* Utilisation du moteur de table InnoDB qui permet l'utilisation des clés étrangères */
+CREATE TABLE `publications` (                                                                                 /* CREATION TABLE PUBLICATIONS */
+  `id` int AUTO_INCREMENT,                                                                                    /* PUBLICATIOON ID */
+  `user_id` int NOT NULL,                                                                                     /* USER ID CREATEUR DE LA PUBLICATOION */
+  `creation_date` TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP),                                             /* DATE DE CREATION DE LA PUBLICATION */
+  `titre` text NOT NULL,                                                                                      /* TITRE */
+  `description` text NOT NULL,                                                                                /* DESCRIPTION */
+  `image_url` text DEFAULT NULL,                                                                              /* URL IMAGE */
+  PRIMARY KEY (`id`,`user_id`),                                                                               /* CLEF PRIMAIRE COMPOSITE => PUBLICATION ID + USER ID */
+  CONSTRAINT `fk_publication_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE     /* CLEF ETRANGERE SUR LA COLONNE "USER_ID" QUI SE SERT DE LA TABLE "USERS" ET DE LA CONOLLE "ID" COMME REFERENCE */
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=1;                                        /* TABLE INNODB (PERMET L'UTILISATION DES CLEFS ETRANGERES) */
 
 
-CREATE TABLE `commentaires` (                                                                                                     /* Création de la table COMMENTAIRES */
-  `id` int AUTO_INCREMENT,                                                                                                        /* Commentaire ID */
-  `user_id` int NOT NULL,                                                                                                         /* User ID créateur du commentaire */
-  `publication_id` int NOT NULL,                                                                                                  /* Publication ID lié au commentaire */
-  `creation_date` TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP),                                                                 /* Date de création du commentaire */
-  `message` text NOT NULL,                                                                                                        /* Message */
-  PRIMARY KEY (`id`, `user_id`, `publication_id`),                                                                                /* Clé primaire composite => Commentaire ID + Publication ID + User ID */
-  CONSTRAINT `fk_commentaire_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,                        /* Clé étrangère sur la colonne "user_id" qui se sert de la table "users" et de la colonne "id" comme référence */
-  CONSTRAINT `fk_commentaire_publication_id` FOREIGN KEY (`publication_id`) REFERENCES `publications` (`id`) ON DELETE CASCADE    /* Clé étrangère sur la colonne "publication_id" qui se sert de la table "publications" et de la colonne "id" comme référence */
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=1;                                                           /* Utilisation du moteur de table InnoDB qui permet l'utilisation des clés étrangères */
+CREATE TABLE `commentaires` (                                                                                                    /* CREATION TABLE COMMENTAIRES */
+  `id` int AUTO_INCREMENT,                                                                                                        /* COMMENTAIRES ID */
+  `user_id` int NOT NULL,                                                                                                         /* USER ID CREATEUR DU COMMENTAIRE  */
+  `publication_id` int NOT NULL,                                                                                                  /* PUBLICATION ID LIEE AU COMMENTAIRE */
+  `creation_date` TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP),                                                                 /* DATE DE CREATUON DU COMMENTAIRE */
+  `message` text NOT NULL,                                                                                                        /* MESSAGE */
+  PRIMARY KEY (`id`, `user_id`, `publication_id`),                                                                                /* CLEF PRIMAIRE COMPOSITE => COMMENTAIRE ID + PUBLICATION ID + USER ID */
+  CONSTRAINT `fk_commentaire_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,                        /* CLEF ETRANGERE SUR LA COLONNE "USER_ID" QUI SE SERT DE LA TABLE "USERS" ET DE LA CONOLLE "ID" COMME REFERENCE */
+  CONSTRAINT `fk_commentaire_publication_id` FOREIGN KEY (`publication_id`) REFERENCES `publications` (`id`) ON DELETE CASCADE    /* CLEF ETRANGERE SUR LA COLONNE "USER_ID" QUI SE SERT DE LA TABLE "PUBLICATION" ET DE LA CONOLLE "ID" COMME REFERENCE */
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=1;                                                           /* TABLE INNODB (PERMET L'UTILISATION DES CLEFS ETRANGERES) */
 
 
-CREATE TABLE `votes` (                                                                                                      /* Création de la table VOTES */
-  `id` int AUTO_INCREMENT,                                                                                                  /* Vote ID */
-  `user_id` int NOT NULL,                                                                                                   /* User ID créateur du vote */
-  `publication_id` int NOT NULL,                                                                                            /* Publication ID lié au vote */
-  `vote` int DEFAULT NULL,                                                                                                  /* Vote */
-  PRIMARY KEY (`id`, `user_id`, `publication_id`),                                                                          /* Clé primaire composite => Vote ID + Publication ID + User ID */
-  CONSTRAINT `fk_vote_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,                         /* Clé étrangère sur la colonne "user_id" qui se sert de la table "users" et de la colonne "id" comme référence */
-  CONSTRAINT `fk_vote_publication_id` FOREIGN KEY (`publication_id`) REFERENCES `publications` (`id`) ON DELETE CASCADE     /* Clé étrangère sur la colonne "publication_id" qui se sert de la table "publications" et de la colonne "id" comme référence */
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=1;                                                     /* Utilisation du moteur de table InnoDB qui permet l'utilisation des clés étrangères */
+CREATE TABLE `votes` (                                                                                                      /* CREATION DE LA TABLE VOTES */
+  `id` int AUTO_INCREMENT,                                                                                                  /* VOTE ID */
+  `user_id` int NOT NULL,                                                                                                   /* USER ID CREATEUR DU VOTE du vote */
+  `publication_id` int NOT NULL,                                                                                            /* PUBLCIATION ID LIE AU VOTE */
+  `vote` int DEFAULT NULL,                                                                                                  /* VOTE */
+  PRIMARY KEY (`id`, `user_id`, `publication_id`),                                                                          /* CLEF PRIMAIRE COMPOSITE => COMMENTAIRE ID + PUBLICATION ID + USER ID */
+  CONSTRAINT `fk_vote_user_id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,                        /* CLEF ETRANGERE SUR LA COLONNE "USER_ID" QUI SE SERT DE LA TABLE "USERS" ET DE LA CONOLLE "ID" COMME REFERENCE */
+  CONSTRAINT `fk_vote_publication_id` FOREIGN KEY (`publication_id`) REFERENCES `publications` (`id`) ON DELETE CASCADE     /* CLEF ETRANGERE SUR LA COLONNE "USER_ID" QUI SE SERT DE LA TABLE "PUBLICATION" ET DE LA CONOLLE "ID" COMME REFERENCE */
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=1;                                                     /* TABLE INNODB (PERMET L'UTILISATION DES CLEFS ETRANGERES) */
