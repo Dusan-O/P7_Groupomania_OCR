@@ -20,7 +20,7 @@
 import {notConnectedClient} from "@/services/auth.js"           // importation de la configuration de requête pour un client non connecté
 
 export default {
-    name: 'Login',
+    name: 'login',
 
     data() {
         return {

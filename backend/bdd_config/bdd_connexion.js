@@ -1,14 +1,14 @@
-const mysql = require('mysql2');       // IMPORT MYSQL
+const mysql = require('mysql');       // IMPORTATION MYSQL
 
-const bdd = mysql.createPool({                // CREATE CONNEXION POOL TO DATABASE            
-    connectionLimit: 30,                      // LIMIT 30 CONNEXION LIMIT
-    host     : process.env.SQL_BDD_HOST,
-    user     : process.env.SQL_BDD_USER,
-    password : process.env.SQL_BDD_PASSWORD,
-    database : process.env.SQL_BDD_NAME
+const bdd = mysql.createPool({                // CREATION CONNEXION         
+    connectionLimit: 30,                      // LIMITE DE 30 CONNEXION
+  host     : process.env.SQL_BDD_HOST,
+  user     : process.env.SQL_BDD_USER,
+  password : process.env.SQL_BDD_PASSWORD,
+  database : process.env.SQL_BDD_NAME
 });
 
-bdd.query('SELECT 1 + 1 AS solution', function (error, results, fields) {     // TEST CONNECT DATABASE
+bdd.query('SELECT 1 + 1 AS solution', function (error, results, fields) {     // TEST CONNECXION BDD
   if (error) {
     return console.error('error: ' + error.message);                          
   }

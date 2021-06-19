@@ -50,11 +50,11 @@ const queryCustom = function (query) {
   });
 };
 
-// FUNCTION TO CREATE THE DATABASE 
+// FONCTION CREATION BDD
 const bddCreation = function () {
   return new Promise((resolve, reject) => {
     try {
-      mysqlConnexion.connect(function (err) {         // CONNECT TO MYSQL 
+      mysqlConnexion.connect(function (err) {         // CONNEXION A MYSQL 
         if (err) throw err;
           console.log("-");
           console.log("-------------------------  Début de la configuration -------------------------");
@@ -63,7 +63,7 @@ const bddCreation = function () {
           console.log("-");
           console.log("Connexion au serveur MySQL validé.");
           console.log("-");
-          mysqlConnexion.query(database, function (err, result) {     // CREATE DATABASE
+          mysqlConnexion.query(database, function (err, result) {     // CREATION BDD
             if (err) {
               return console.error('error: ' + err.message);
             }
@@ -78,15 +78,15 @@ const bddCreation = function () {
   });
 }
 
-// INITIALISATION CONFIG OF THE DATABASE
+// INITIALISATION CONFIGURATION DE LA DBB 
 const launchDatabaseConfig = function() {                                   
   
   //  ASYNC FUNCTION TO USE AWAIT
   const asyncFunction = async function() {                                  
     
-    await bddCreation();                                                    // AWAIT DATABASE CREATION
+    await bddCreation();                                                    // AWAIT DBB CREATION
     
-    bdd.connect( async function (err) {                                     // CONNECT TO DATABASE WHEN CREATED
+    bdd.connect( async function (err) {                                     // CONNEXION A LA BDD LORSQUE CREE
       if (err) {
         return console.error('error: ' + err.message);
       }
@@ -110,12 +110,12 @@ const launchDatabaseConfig = function() {
         console.log("-");
         console.log("-------------------------  Fin de la configuration -------------------------");
         console.log("-");
-        process.exit();                                                     //  END
+        process.exit();                                                     //  FIN
       } catch (err) {
         console.error('error: ' + err.message);
       }
     });
   };
-  asyncFunction();      // ASYNC FUNCTION
+  asyncFunction();      // ASYNC FONCTION
 };
-launchDatabaseConfig();  // GLOBAL FUNCTION
+launchDatabaseConfig();  // GLOBAL FONCTION
