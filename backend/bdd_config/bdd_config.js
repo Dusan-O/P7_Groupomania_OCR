@@ -3,11 +3,11 @@ const mysql = require('mysql2');      // IMPORTATION MYSQL
 
 
 // PARAMETRES DE CONNEXION AU SERVEUR MYSQL 
-// const mysqlConnexion = mysql.createConnection({
-//  host     : process.env.SQL_BDD_HOST,
-//  user     : process.env.SQL_BDD_USER,
-//  password : process.env.SQL_BDD_PASSWORD
-// });
+const mysqlConnexion = mysql.createConnection({
+host     : process.env.SQL_BDD_HOST,
+user     : process.env.SQL_BDD_USER,
+password : process.env.SQL_BDD_PASSWORD
+});
 
 // PARAMETRES DE CONNEXION AU SERVEUR MYSQL 
 const bdd = mysql.createConnection({

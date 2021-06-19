@@ -47,7 +47,7 @@ export default {
             }
             })
             .catch((error) => {
-                this.message = error.response.data.error;       // si la requête a échouée, on affiche le message d'erreur envoyé par le back
+                this.message = error.response.data;       // si la requête a échouée, on affiche le message d'erreur envoyé par le back
             })
         }
     }

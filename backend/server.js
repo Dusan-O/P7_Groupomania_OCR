@@ -1,7 +1,7 @@
-const http = require('http');      // Importation du package http de node (permet de creer un serveur)
-const app = require('./app')        // Importation de app.js
+const http = require('http');                // IMPORT HTTP
+const app = require('./app')                 // IMPORT APP.JS
 
-app.set('port, 3000')       // Port utilisé par l'application express
-const server = http.createServer(app);      // L'application créée par express est une fonction qui va recevoir la requête et la réponse
+app.set('port, 3000')                        // PORT USED BY EXPRESS
+const server = http.createServer(app);       
 
-server.listen(3000);        // Le serveur attend les requêtes au port 3000
+server.listen(3000);                         // REQUESTS PORT 3000
