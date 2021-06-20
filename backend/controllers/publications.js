@@ -3,9 +3,7 @@ const fs = require('fs');                                                       
 const mysql = require('mysql2');                                                    // IMPORT MYSQL
 const jwt = require('jsonwebtoken');                                                // IMPORT JWT
 const querystring = require('querystring');                                         // IMPORT QUERYSTRING
-
 const bdd = require("../bdd_config/bdd_connexion");                                 // IMPORT CONNEXTION DATABASE
-
 
 let decodeToken = function(req){                                                    // DECODE TOKEN & GET USER ID
     let token = req.headers.authorization.split(' ')[1];                            // GET TOKEN FROM REQUEST HEADER

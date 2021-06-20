@@ -1,4 +1,4 @@
-const mysql = require('mysql');       // IMPORTATION MYSQL
+const mysql = require('mysql2');       // IMPORTATION MYSQL
 
 const bdd = mysql.createPool({                // CREATION CONNEXION         
     connectionLimit: 30,                      // LIMITE DE 30 CONNEXION
