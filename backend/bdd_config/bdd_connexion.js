@@ -5,7 +5,8 @@ const bdd = mysql.createPool({                // CREATION CONNEXION
   host     : process.env.SQL_BDD_HOST,
   user     : process.env.SQL_BDD_USER,
   password : process.env.SQL_BDD_PASSWORD,
-  database : process.env.SQL_BDD_NAME
+  database : process.env.SQL_BDD_NAME,
+  port     : process.env.SQL_BDD_PORT
 });
 
 bdd.query('SELECT 1 + 1 AS solution', function (error, results, fields) {     // TEST CONNECXION BDD

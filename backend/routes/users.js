@@ -7,7 +7,8 @@ const verifyPassword = require('../middleware/verify-password');                
 //const verifyPasswordUpdate = require('../middleware/verify-password-update');        // importation du middleware
 
 
-router.post('/signup', verifyPassword, usersCtrl.signup)                               // inscription d'un utilisateur
+router
+    .post('/signup', verifyPassword, usersCtrl.signup)                               // inscription d'un utilisateur
     .post('/login', bouncer.block, usersCtrl.login)                                   // connexion d'un utilisateur
     .get('/:id', auth, usersCtrl.getOneUser)                                          // récupération d'un utilisateur
     //.put('/update', auth, verifyPasswordUpdate, usersCtrl.updateOneUser)              // mise à jour d'un utilisateur

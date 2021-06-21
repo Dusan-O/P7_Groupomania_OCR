@@ -55,13 +55,16 @@ exports.login = (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
 
+    console.log(email);
+
     if (validator.isEmail(String(email))) {
 
         let sql= "SELECT id, email, password, niveau_acces FROM users WHERE email = ?";     // préparation de la requete SQL
         let inserts = [email];                                                                  // utilisation des valeurs à insérer
         sql = mysql.format(sql, inserts);                                                       // assemblage final de la requête
 
-        const userLogin = bdd.query(sql, (error, user) => {                                     // envoi de la requête a la base de données
+        const userLogin = bdd.query(sql, (error, user) => {   
+            console.log(error, user);                                 // envoi de la requête a la base de données
             if (error) {                                                                        // si aucune correspondance avec un utilisateur n'a été trouvée
                 return res.status(400).json({ error : "Votre email est invalide !" })           // l'email est donc invalide
             }
@@ -69,7 +72,7 @@ exports.login = (req, res, next) => {
                 res.status(400).json({ error: "Une erreur est survenue, utilisateur non trouvé !" })    // utilisateur introuvable
             }
 
-            bcrypt.compare(password, user[0].password).then((valid) => {                    // si une correspondance avec un utilisateur a été trouvée alors on vérifie le mot de passe
+            bcrypt.compare(password, user[0].password).then((valid) => {                        // si une correspondance avec un utilisateur a été trouvée alors on vérifie le mot de passe
                 if (!valid) {                                                                   // si les deux mots de passes ne correspondent pas
                     return res.status(400).json({ error : "Mot de passe invalide !"})           // le mot de passe est donc invalide
                 }

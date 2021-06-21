@@ -12,7 +12,7 @@ let decodeToken = function(req){                                                
     return decodedToken;                                                            // RETURN TABLE WITH USERID AND ACCESS LEVEL
 }
 
-// CREATE PUBLICATION
+// CREATE PUBLICATION****************************************************************
 exports.createPublication = (req, res, next) => {
 
     const tokenInfos = decodeToken(req);                                            // DECODETOKEN FUNCTION
@@ -50,7 +50,7 @@ exports.createPublication = (req, res, next) => {
     } 
 };
 
-// GET ALL PUBLICATIONS
+// GET ALL PUBLICATIONS****************************************************************
 exports.getAllPublications = (req, res, next) => {
 
     const tokenInfos = decodeToken(req);        // DECODETOKEN
@@ -99,7 +99,7 @@ exports.getAllPublications = (req, res, next) => {
     });
 };
 
-// GET MOST RECENT PUBLICATIONS
+// GET MOST RECENT PUBLICATIONS****************************************************************
 exports.getMostRecentPublications = (req, res, next) => {
 
     const tokenInfos = decodeToken(req);        // DECODETOKEN
@@ -148,7 +148,7 @@ exports.getMostRecentPublications = (req, res, next) => {
     });
 };
 
-// GET MOST LIKED PUBLICATIONS
+// GET MOST LIKED PUBLICATIONS****************************************************************
 exports.getMostLikedPublications = (req, res, next) => {
 
     const tokenInfos = decodeToken(req);        
@@ -197,7 +197,7 @@ exports.getMostLikedPublications = (req, res, next) => {
     });
 };
 
-// GET MOST COMMENTED PUBLICATIONS
+// GET MOST COMMENTED PUBLICATIONS****************************************************************
 exports.getMostCommentedPublications = (req, res, next) => {
 
     const tokenInfos = decodeToken(req);        
@@ -246,7 +246,7 @@ exports.getMostCommentedPublications = (req, res, next) => {
     });
 };
 
-// GET ONE USER ALL PUBLICATIONS
+// GET ONE USER ALL PUBLICATIONS****************************************************************
 exports.getOneUserAllPublications = (req, res, next) => {
 
     const tokenInfos = decodeToken(req);        
@@ -284,7 +284,7 @@ exports.getOneUserAllPublications = (req, res, next) => {
     });
 };
 
-// GET ONE PUBLICATION
+// GET ONE PUBLICATION****************************************************************
 exports.getOnePublication = (req, res, next) => {
 
     const tokenInfos = decodeToken(req);        
@@ -350,7 +350,7 @@ exports.getOnePublication = (req, res, next) => {
     });
 };
 
-// DELETE PUBLICATION
+// DELETE PUBLICATION****************************************************************
 exports.deletePublication = (req, res, next) => {
 
     const tokenInfos = decodeToken(req);                                
@@ -422,7 +422,7 @@ exports.deletePublication = (req, res, next) => {
     }
 };
 
-// COMMENT PUBLICATION
+// COMMENT PUBLICATION****************************************************************
 exports.commentPublication = (req, res, next) => {
 
     const tokenInfos = decodeToken(req);                                
@@ -444,7 +444,7 @@ exports.commentPublication = (req, res, next) => {
     });
 };
 
-// DELETE COMMENT
+// DELETE COMMENT****************************************************************
 exports.deleteComment = (req, res, next) => {
     
     const tokenInfos = decodeToken(req);                                
@@ -486,7 +486,7 @@ exports.deleteComment = (req, res, next) => {
     }
 };
 
-// VOTE PUBLICATION
+// VOTE PUBLICATION****************************************************************
 exports.votePublication = (req, res, next) => {
 
     const tokenInfos = decodeToken(req);                                
