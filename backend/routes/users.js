@@ -4,14 +4,14 @@ const router = express.Router();                                                
 const usersCtrl = require('../controllers/users')                                   // importation du controller users
 const auth = require('../middleware/auth');                                         // importation de notre middleware d'authentification
 const verifyPassword = require('../middleware/verify-password');                    // importation du middleware
-//const verifyPasswordUpdate = require('../middleware/verify-password-update');        // importation du middleware
+const verifyPasswordUpdate = require('../middleware/verify-password-update');        // importation du middleware
 
 
 router
-    .post('/signup', verifyPassword, usersCtrl.signup)                               // inscription d'un utilisateur
+    .post('/signup', usersCtrl.signup)                               // inscription d'un utilisateur
     .post('/login', bouncer.block, usersCtrl.login)                                   // connexion d'un utilisateur
     .get('/:id', auth, usersCtrl.getOneUser)                                          // récupération d'un utilisateur
-    //.put('/update', auth, verifyPasswordUpdate, usersCtrl.updateOneUser)              // mise à jour d'un utilisateur
+    .put('/update', auth, verifyPasswordUpdate, usersCtrl.updateOneUser)              // mise à jour d'un utilisateur
     .delete('/:id', auth, usersCtrl.deleteOneUser);                                   // suppresion d'un utilisateur
 
 

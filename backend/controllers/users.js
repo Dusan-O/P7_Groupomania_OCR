@@ -3,8 +3,11 @@ const validator = require("validator");                                         
 const mysql = require('mysql2');                                                    // importation mysql
 const bcrypt = require ('bcrypt');                                                  // importation bcrypt
 const jwt = require('jsonwebtoken');                                                // importation jwt
+const bdd = require("../bdd_config/bdd_connexion.js");                                 // importation de la connexion a la base de données
 
-const bdd = require("../bdd_config/bdd_connexion");                                 // importation de la connexion a la base de données
+const auth = require('../middleware/auth');                                         // importation de notre middleware d'authentification
+const verifyPassword = require('../middleware/verify-password');                    // importation du middleware
+const verifyPasswordUpdate = require('../middleware/verify-password-update');  
 
 let decodeToken = function(req){                                                    // fonction qui décode le token et récupère le UserID et le niveau d'acces
     let token = req.headers.authorization.split(' ')[1];                            // on récupère uniquement le token du header de la requête
@@ -13,7 +16,11 @@ let decodeToken = function(req){                                                
     return decodedToken;                                                            // on retourne un tableau avec le UserId et le niveau d'acces
 };
 
+/* CREATE 
+*********************************************************/
 exports.signup = (req, res) => {
+
+    return res.json({ message: 'signup' });
 
     const nom = req.body.nom;
     const prenom = req.body.prenom;
@@ -23,8 +30,8 @@ exports.signup = (req, res) => {
     const password = req.body.password;
 
     if (validator.isEmail(String(email))) {                                        // Si l'email passe la validation
-        bcrypt.hash(password, 10, (error, hash) => {                               // fonction asynchrone pour hasher le mot de passe
-
+        bcrypt.hash(password, 10, (error, hash) => {
+                                                                                           // fonction asynchrone pour hasher le mot de passe
                 let sql = "INSERT INTO users (nom, prenom, email, departement, poste, password) VALUES (?, ?, ?, ?, ?, ?)";     // préparation de la requete SQL
                 let inserts = [nom, prenom, email, departement, poste, hash];                                                       // utilisation des valeurs à insérer
                 sql = mysql.format(sql, inserts);                                                                                   // assemblage final de la requête
@@ -49,9 +56,12 @@ exports.signup = (req, res) => {
     }
 };
 
+/* LOGIN 
+*********************************************************/
+exports.login = (req, res) => {
 
-exports.login = (req, res, next) => {
-
+    return res.json({ message: 'Login' });
+    
     const email = req.body.email;
     const password = req.body.password;
 
@@ -90,7 +100,11 @@ exports.login = (req, res, next) => {
     }
 };
 
-exports.getOneUser = (req, res, next) => {
+/* READ 
+*********************************************************/
+exports.getOneUser = (req, res) => {
+
+    return res.json({ message: 'Read' });
 
     const tokenInfos = decodeToken(req);        // on utilise la fonction decodeToken
     const userId = tokenInfos[0];               // on obtient le UserId du token
@@ -115,7 +129,11 @@ exports.getOneUser = (req, res, next) => {
     }
 };
 
-exports.updateOneUser = (req, res, next) => { 
+/* UPDATE 
+*********************************************************/
+exports.updateOneUser = (req, res) => { 
+
+    return res.json({ message: 'Update' });
 
     const tokenInfos = decodeToken(req);            // on utilise la fonction decodeToken
     const userId = tokenInfos[0];                   // on obtient le UserId du token
@@ -181,7 +199,12 @@ exports.updateOneUser = (req, res, next) => {
     }
 };
 
-exports.deleteOneUser = (req, res, next) => {
+/* DELETE 
+*********************************************************/
+exports.deleteOneUser = (req, res) => {
+
+    return res.json({ message: 'Delete' });
+
     
     const tokenInfos = decodeToken(req);        // on utilise la fonction decodeToken
     const userId = tokenInfos[0];               // on obtient le UserId du token

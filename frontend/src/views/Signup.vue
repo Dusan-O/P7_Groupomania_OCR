@@ -57,7 +57,8 @@ export default {
       const poste = this.$refs.poste.value;
       const password = this.$refs.password.value;
       const confirmedPassword = this.$refs.confirmedpassword.value;
-
+      console.log(confirmedPassword);
+      console.log(password);
       if(password === confirmedPassword){             // on vérifie que le mot de passe est confirmé
         notConnectedClient.post("/users/signup", {
           nom,
