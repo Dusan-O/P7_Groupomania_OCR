@@ -1,4 +1,4 @@
-require('dotenv').config();      // IMPORTATION DU PAQUET DOTENV POUR LES VARIABLES D'ENVIRONNEMENT
+require('dotenv').config();      
 const mysql2 = require('mysql2'); 
 
 // PARAMETRES DE CONNEXION AU SERVEUR MYSQL 
@@ -13,7 +13,7 @@ const bdd = mysql2.createConnection({
   host     : process.env.SQL_BDD_HOST,
   user     : process.env.SQL_BDD_USER,
   password : process.env.SQL_BDD_PASSWORD,
-  database : process.env.SQL_BDD_NAME,
+  // database : process.env.SQL_BDD_NAME,
   port     : process.env.SQL_BDD_PORT
 });
 console.log(process.env.SQL_BDD_HOST);
@@ -21,7 +21,9 @@ console.log(process.env.SQL_BDD_USER);
 console.log(process.env.SQL_BDD_PASSWORD);
 console.log(process.env.SQL_BDD_NAME);
 // DATABASE
-var database = `CREATE DATABASE ${process.env.SQL_BDD_NAME}; USE ${process.env.SQL_BDD_NAME};`
+var database = `CREATE DATABASE ${process.env.SQL_BDD_NAME};`
+var useDatabase = `USE ${process.env.SQL_BDD_NAME};`
+
 // USER TABLE
 const tableUsers = "CREATE TABLE `users` ( `id` int PRIMARY KEY AUTO_INCREMENT, `creation_date` TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP), `nom` varchar(30) DEFAULT NULL, `prenom` varchar(30) DEFAULT NULL, `email` varchar(60) NOT NULL UNIQUE, `departement` varchar(30) DEFAULT NULL, `poste` varchar(30) DEFAULT NULL, `mot_de_passe` varchar(100) NOT NULL, `niveau_acces` int DEFAULT NULL ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=1;";
 // TABLE POST
@@ -48,7 +50,7 @@ const queryCustom = function (query) {
 };
 
 // FONCTION CREATION BDD
-const bddCreation = function (tableUsers) {
+const bddCreation = function (database) {
   return new Promise((resolve, reject) => {
     try {
       bdd.connect(function (err) {         // CONNEXION A MYSQL 
@@ -61,7 +63,7 @@ const bddCreation = function (tableUsers) {
           console.log("Connexion au serveur MySQL validé.");
           console.log("-");
           console.log(database);
-          bdd.query(tableUsers, function (err, result) {     // CREATION BDD
+          bdd.query(database, function (err, result) {     // CREATION BDD
             console.log(result);
             if (err) {
               return console.error('error: ' + err.message);
@@ -83,8 +85,9 @@ const launchDatabaseConfig = function() {
   //  ASYNC FUNCTION TO USE AWAIT
   const asyncFunction = async function() {                                  
     console.log(tableUsers);
-    await bddCreation(tableUsers);                                                    // AWAIT DBB CREATION
-    
+    await bddCreation(database);                                                    // AWAIT DBB CREATION
+    await queryCustom(useDatabase);
+
     bdd.connect( async function (err) {                                     // CONNEXION A LA BDD LORSQUE CREE
       if (err) {
         return console.error('error: ' + err.message);
