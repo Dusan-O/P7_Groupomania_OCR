@@ -30,7 +30,7 @@ export default {
 
     methods: {
         login() {                                               // fonction de connexion
-            const email = this.$refs.email.value;
+            const userName = this.$refs.email.value;
             const password = this.$refs.password.value;
 
             notConnectedClient.post("/users/login", {           // envoi de la requête non authentifié avec notConnectedClient

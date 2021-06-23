@@ -12,7 +12,7 @@ const app = express();                                          // Création de 
 app.use(helmet());                                              // Mise en place d'un header sécurisé pour luter contre les failles XSS
 
 app.use((req, res, next) => {                                   // middleware général appliqué à toute les requêtes (CORS)
-    res.setHeader('Access-Control-Allow-Origin', '*');          // autorisation d'acceder à notre API
+    res.setHeader('Access-Control-Allow-Origin', '*');              // autorisation d'acceder à notre API
     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');        //  autorisation d'utiliser certains headers
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');        // autorisation d'utiliser certaines méthodes
     next();
@@ -25,7 +25,7 @@ app.use(sanitizeMiddleware());      // nettoyage des données reçus pour évite
 
 app.use('/images', express.static(path.join(__dirname, 'images')));   // middleware spécifique qui permet de servir le dossier image lors d'une requête spécifique avec l'image
 
-app.use('/users', usersRoutes);       // pour cette route la, on utilise le router usersRoutes
+app.use('/users', usersRoutes);                     // pour cette route la, on utilise le router usersRoutes
 app.use('/publications', publicationsRoutes);       // pour cette route la, on utilise le router publicationsRoutes
 
 module.exports = app;       // Exportation de l'application pour y accéder à partir des autres fichiers

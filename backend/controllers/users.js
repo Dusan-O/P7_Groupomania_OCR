@@ -2,25 +2,41 @@ require('dotenv').config();                                                     
 const validator = require("validator");                                             // importation validator
 const mysql = require('mysql2');                                                    // importation mysql
 const bcrypt = require ('bcrypt');                                                  // importation bcrypt
-const jwt = require('jsonwebtoken');                                                // importation jwt
+const jwt = require('jsonwebtoken');   
+const cors = require('cors');                                             // importation jwt
 const bdd = require("../bdd_config/bdd_connexion.js");                                 // importation de la connexion a la base de données
 
 const auth = require('../middleware/auth');                                         // importation de notre middleware d'authentification
 const verifyPassword = require('../middleware/verify-password');                    // importation du middleware
 const verifyPasswordUpdate = require('../middleware/verify-password-update');  
 
-let decodeToken = function(req){                                                    // fonction qui décode le token et récupère le UserID et le niveau d'acces
-    let token = req.headers.authorization.split(' ')[1];                            // on récupère uniquement le token du header de la requête
-    let decodedToken = jwt.verify(token, process.env.JWT_AUTH_SECRET_TOKEN);        // on décode le token avec la fonction verify qui prend le token et la clé secrète
-    decodedToken = [decodedToken.userId, decodedToken.niveau_acces];                // on récupère le niveau d'acces du token décodé
-    return decodedToken;                                                            // on retourne un tableau avec le UserId et le niveau d'acces
-};
+// let decodeToken = function(req){                                                    // fonction qui décode le token et récupère le UserID et le niveau d'acces
+//     let token = req.headers.authorization.split(' ')[1];                            // on récupère uniquement le token du header de la requête
+//     let decodedToken = jwt.verify(token, process.env.JWT_AUTH_SECRET_TOKEN);        // on décode le token avec la fonction verify qui prend le token et la clé secrète
+//     decodedToken = [decodedToken.userId, decodedToken.niveau_acces];                // on récupère le niveau d'acces du token décodé
+//     return decodedToken;                                                            // on retourne un tableau avec le UserId et le niveau d'acces
+// };
 
 /* CREATE 
 *********************************************************/
-exports.signup = (req, res) => {
-
-    return res.json({ message: 'signup' });
+exports.signup = (req, res, next) => {
+    const user = req.body
+    // email = user.email
+    // let emailhash = sha1(email)
+    // user.email = emailhash
+     bcrypt.hash(user.password, 10) 
+    .then((hash) => {
+        user.password = hash
+        bdd.query(`INSERT INTO users SET ?`, user, (err, result, field) => {
+            if (err) {
+                console.log(err)
+                return res.status(400).json("erreur")
+            }
+            return res.status(201).json({message : 'Votre compte a bien été crée !'},)
+        });
+    });
+};  
+/* exports.signup = (req, res) => {
 
     const nom = req.body.nom;
     const prenom = req.body.prenom;
@@ -32,9 +48,9 @@ exports.signup = (req, res) => {
     if (validator.isEmail(String(email))) {                                        // Si l'email passe la validation
         bcrypt.hash(password, 10, (error, hash) => {
                                                                                            // fonction asynchrone pour hasher le mot de passe
-                let sql = "INSERT INTO users (nom, prenom, email, departement, poste, password) VALUES (?, ?, ?, ?, ?, ?)";     // préparation de la requete SQL
-                let inserts = [nom, prenom, email, departement, poste, hash];                                                       // utilisation des valeurs à insérer
-                sql = mysql.format(sql, inserts);                                                                                   // assemblage final de la requête
+                let sql = 'INSERT INTO users (nom, prenom, email, departement, poste, hash) VALUES (?, ?, ?, ?, ?, ?)';     // préparation de la requete SQL
+                //let inserts = [nom, prenom, email, departement, poste, hash];                                                       // utilisation des valeurs à insérer
+                //sql = mysql.format(sql, inserts);                                                                                   // assemblage final de la requête
     
                 const userSignup = bdd.query(sql, (user, error) => {            // envoi de la requête a la base de données
                     if (!error) {                                               // si aucune erreur après la requête
@@ -54,13 +70,48 @@ exports.signup = (req, res) => {
     } else {
         return res.status(400).json({ error : "Votre email est invalide !"})      // le format de l'email est invalide
     }
-};
+}; */
 
 /* LOGIN 
 *********************************************************/
-exports.login = (req, res) => {
+exports.login = (req, res, next) => {
+    const userName = req.body.email
+	const password = req.body.password
 
-    return res.json({ message: 'Login' });
+	if (userName && password) {
+      bdd.query('SELECT * FROM users WHERE userName= ?', userName, (error, results, fields) => {
+           if (results.length > 0) {
+            bcrypt.compare(password, results[0].password).then((valid) => {
+              if (!valid) {
+                res.status(401).json({ message: 'Utilisateur ou mot de passe inconnu' })
+              } else {
+                console.log(userName, "s'est connecté")
+                let status = ''
+                if (results[0].isAdmin === 1) {
+                  status = 'admin'
+                } else {
+                  status = 'membre'
+                }
+                res.status(200).json({
+                  userId: results[0].id,
+                  email: results[0].email,
+                  status: status,
+                  token: jwt.sign({ userId: results[0].id, status: status },TOKEN,{ expiresIn: '24h' })
+                })
+                
+              }
+            })
+          } 
+          else {
+            res.status(401).json({ message: 'Utilisateur ou mot de passe inconnu' })
+          }
+        }
+      )
+    } else {
+      res.status(500).json({ message: "Entrez votre email et votre mot de passe" })
+    }
+  }
+/* exports.login = (req, res) => {
     
     const email = req.body.email;
     const password = req.body.password;
@@ -98,13 +149,11 @@ exports.login = (req, res) => {
             });
         });
     }
-};
+}; */
 
 /* READ 
 *********************************************************/
 exports.getOneUser = (req, res) => {
-
-    return res.json({ message: 'Read' });
 
     const tokenInfos = decodeToken(req);        // on utilise la fonction decodeToken
     const userId = tokenInfos[0];               // on obtient le UserId du token
@@ -132,8 +181,6 @@ exports.getOneUser = (req, res) => {
 /* UPDATE 
 *********************************************************/
 exports.updateOneUser = (req, res) => { 
-
-    return res.json({ message: 'Update' });
 
     const tokenInfos = decodeToken(req);            // on utilise la fonction decodeToken
     const userId = tokenInfos[0];                   // on obtient le UserId du token
@@ -202,9 +249,6 @@ exports.updateOneUser = (req, res) => {
 /* DELETE 
 *********************************************************/
 exports.deleteOneUser = (req, res) => {
-
-    return res.json({ message: 'Delete' });
-
     
     const tokenInfos = decodeToken(req);        // on utilise la fonction decodeToken
     const userId = tokenInfos[0];               // on obtient le UserId du token

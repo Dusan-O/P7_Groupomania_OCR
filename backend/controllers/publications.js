@@ -3,7 +3,7 @@ const fs = require('fs');                                                       
 const mysql = require('mysql2');                                                    // IMPORT MYSQL
 const jwt = require('jsonwebtoken');                                                // IMPORT JWT
 const querystring = require('querystring');                                         // IMPORT QUERYSTRING
-const bdd = require("../bdd_config/bdd_connexion");                                 // IMPORT CONNEXTION DATABASE
+const bdd = require("../bdd_config/bdd_connexion.js");                                 // IMPORT CONNEXTION DATABASE
 
 let decodeToken = function(req){                                                    // DECODE TOKEN & GET USER ID
     let token = req.headers.authorization.split(' ')[1];                            // GET TOKEN FROM REQUEST HEADER
@@ -15,7 +15,7 @@ let decodeToken = function(req){                                                
 // CREATE PUBLICATION****************************************************************
 exports.createPublication = (req, res) => {
 
-    return res.json({ message: 'createPublication' });
+    console.log(this.createPublication);
 
     const tokenInfos = decodeToken(req);                                            // DECODETOKEN FUNCTION
     const userId = tokenInfos[0];                                                   // GET TOKEN'S USER ID
@@ -55,7 +55,6 @@ exports.createPublication = (req, res) => {
 // GET ALL PUBLICATIONS****************************************************************
 exports.getAllPublications = (req, res) => {
 
-    return res.json({ message: 'getAllPublications' });
 
     const tokenInfos = decodeToken(req);        // DECODETOKEN
     const userId = tokenInfos[0];               // GET TOKEN'S USERID
@@ -106,7 +105,6 @@ exports.getAllPublications = (req, res) => {
 // GET MOST RECENT PUBLICATIONS****************************************************************
 exports.getMostRecentPublications = (req, res) => {
 
-    return res.json({ message: 'getMostRecentPublications' });
 
     const tokenInfos = decodeToken(req);        // DECODETOKEN
     const userId = tokenInfos[0];               // TOKEN'S USERID
@@ -157,7 +155,6 @@ exports.getMostRecentPublications = (req, res) => {
 // GET MOST LIKED PUBLICATIONS****************************************************************
 exports.getMostLikedPublications = (req, res) => {
 
-    return res.json({ message: 'getMostLikedPublications' });
 
     const tokenInfos = decodeToken(req);        
     const userId = tokenInfos[0];               
@@ -208,7 +205,6 @@ exports.getMostLikedPublications = (req, res) => {
 // GET MOST COMMENTED PUBLICATIONS****************************************************************
 exports.getMostCommentedPublications = (req, res) => {
 
-    return res.json({ message: 'getMostCommentedPublications' });
 
     const tokenInfos = decodeToken(req);        
     const userId = tokenInfos[0];               
@@ -259,8 +255,6 @@ exports.getMostCommentedPublications = (req, res) => {
 // GET ONE USER ALL PUBLICATIONS****************************************************************
 exports.getOneUserAllPublications = (req, res, next) => {
 
-    return res.json({ message: 'getOneUserAllPublications' });
-
     const tokenInfos = decodeToken(req);        
     const userId = tokenInfos[0];               
 
@@ -299,7 +293,6 @@ exports.getOneUserAllPublications = (req, res, next) => {
 // GET ONE PUBLICATION****************************************************************
 exports.getOnePublication = (req, res, next) => {
 
-    return res.json({ message: 'getOnePublication' });
 
     const tokenInfos = decodeToken(req);        
     const userId = tokenInfos[0];               
@@ -367,7 +360,6 @@ exports.getOnePublication = (req, res, next) => {
 // DELETE PUBLICATION****************************************************************
 exports.deletePublication = (req, res) => {
 
-    return res.json({ message: 'deletePublication' });
 
     const tokenInfos = decodeToken(req);                                
     const userId = tokenInfos[0];                                       
@@ -441,8 +433,6 @@ exports.deletePublication = (req, res) => {
 // COMMENT PUBLICATION****************************************************************
 exports.commentPublication = (req, res) => {
 
-    return res.json({ message: 'commentPublication' });
-
     const tokenInfos = decodeToken(req);                                
     const userId = tokenInfos[0];                                      
     
@@ -464,8 +454,6 @@ exports.commentPublication = (req, res) => {
 
 // DELETE COMMENT****************************************************************
 exports.deleteComment = (req, res) => {
-
-    return res.json({ message: 'deleteComment' });
     
     const tokenInfos = decodeToken(req);                                
     const userId = tokenInfos[0];                                       
@@ -508,8 +496,6 @@ exports.deleteComment = (req, res) => {
 
 // VOTE PUBLICATION****************************************************************
 exports.votePublication = (req, res) => {
-
-    return res.json({ message: 'votePublication' });
 
     const tokenInfos = decodeToken(req);                                
     const userId = tokenInfos[0];                                       

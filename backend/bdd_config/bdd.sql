@@ -6,7 +6,7 @@ CREATE TABLE `users` (                                                      /* C
   `email` varchar(60) NOT NULL UNIQUE,                                      /* EMAIL UNIQUE  */
   `departement` varchar(30) DEFAULT NULL,                                   /* DEPARTEMENT */
   `poste` varchar(30) DEFAULT NULL,                                         /* POSTE */
-  `mot_de_passe` varchar(100) NOT NULL,                                     /* MOT DE PASSE */
+  `password` varchar(100) NOT NULL,                                     /* MOT DE PASSE */
   `niveau_acces` int DEFAULT NULL                                           /* NIVEAU D'ACCES, rôle, droit */
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=1;     /* TABLE INNODB (PERMET L'UTILISATION DES CLEFS ETRANGERES) */
 

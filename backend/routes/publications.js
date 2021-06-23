@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const postController = require('../controllers/publications.js');        // importation du controller publications
-const auth = require('../middleware/auth');                             // importation de notre middleware d'authentification
-const multer = require('../middleware/multer-config');                  // importation de notre middleware multer
+const auth = require('../middleware/auth.js');                             // importation de notre middleware d'authentification
+const multer = require('../middleware/multer-config.js');                  // importation de notre middleware multer
 
 router
     .post('/', postController.createPublication)                      // Création d'une publication
