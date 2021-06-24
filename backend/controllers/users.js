@@ -10,12 +10,12 @@ const auth = require('../middleware/auth');                                     
 const verifyPassword = require('../middleware/verify-password');                    // importation du middleware
 const verifyPasswordUpdate = require('../middleware/verify-password-update');  
 
-// let decodeToken = function(req){                                                    // fonction qui décode le token et récupère le UserID et le niveau d'acces
-//     let token = req.headers.authorization.split(' ')[1];                            // on récupère uniquement le token du header de la requête
-//     let decodedToken = jwt.verify(token, process.env.JWT_AUTH_SECRET_TOKEN);        // on décode le token avec la fonction verify qui prend le token et la clé secrète
-//     decodedToken = [decodedToken.userId, decodedToken.niveau_acces];                // on récupère le niveau d'acces du token décodé
-//     return decodedToken;                                                            // on retourne un tableau avec le UserId et le niveau d'acces
-// };
+let decodeToken = function(req){                                                    // fonction qui décode le token et récupère le UserID et le niveau d'acces
+    let token = req.headers.authorization.split(' ')[1];                            // on récupère uniquement le token du header de la requête
+    let decodedToken = jwt.verify(token, process.env.JWT_AUTH_SECRET_TOKEN);        // on décode le token avec la fonction verify qui prend le token et la clé secrète
+    decodedToken = [decodedToken.userId, decodedToken.niveau_acces];                // on récupère le niveau d'acces du token décodé
+    return decodedToken;                                                            // on retourne un tableau avec le UserId et le niveau d'acces
+};
 
 /* CREATE 
 *********************************************************/
@@ -36,6 +36,7 @@ exports.signup = (req, res, next) => {
         });
     });
 };  
+
 /* exports.signup = (req, res) => {
 
     const nom = req.body.nom;
@@ -75,15 +76,17 @@ exports.signup = (req, res, next) => {
 /* LOGIN 
 *********************************************************/
 exports.login = (req, res, next) => {
-    const userName = req.body.email
-	const password = req.body.password
+    const userName = req.body.email;
+	const password = req.body.password;
+
+    console.table([userName, password]);
 
 	if (userName && password) {
-      bdd.query('SELECT * FROM users WHERE userName= ?', userName, (error, results, fields) => {
+      bdd.query('SELECT * FROM users WHERE email= ?', userName, (error, results, fields) => {
            if (results.length > 0) {
             bcrypt.compare(password, results[0].password).then((valid) => {
               if (!valid) {
-                res.status(401).json({ message: 'Utilisateur ou mot de passe inconnu' })
+                res.status(401).json({ message: 'Mot de passe incorrect' })
               } else {
                 console.log(userName, "s'est connecté")
                 let status = ''
@@ -92,11 +95,13 @@ exports.login = (req, res, next) => {
                 } else {
                   status = 'membre'
                 }
+
+                console.log(process.env.JWT_AUTH_SECRET_TOKEN);
                 res.status(200).json({
                   userId: results[0].id,
                   email: results[0].email,
                   status: status,
-                  token: jwt.sign({ userId: results[0].id, status: status },TOKEN,{ expiresIn: '24h' })
+                  token: jwt.sign({ userId: results[0].id, status: status },process.env.JWT_AUTH_SECRET_TOKEN,{ expiresIn: '24h' })
                 })
                 
               }

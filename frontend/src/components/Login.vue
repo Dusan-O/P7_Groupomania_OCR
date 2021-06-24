@@ -4,8 +4,9 @@
         <img src="../assets/icon-above-font.svg" alt="Groupomania logo">
         <form @submit.prevent = login()>
             <div class="mb-2">Champs requis (*)</div>
-            <input id="email" ref="email" type="email" placeholder="E-mail (*)" title="Renseignez votre email" required>
-            <input id="password" ref="password" type="password" placeholder="Mot de passe (*)" title="Renseignez votre mot de passe" required>
+            {{ email }}
+            <input id="email" ref="email" type="email" v-model="email" placeholder="E-mail (*)" title="Renseignez votre email" required>
+            <input id="password" ref="password" type="password" v-model="password" placeholder="Mot de passe (*)" title="Renseignez votre mot de passe" required>
             <div class="message-erreur">{{ message }}</div>
             <div class="container-button mx-auto mt-6 mb-15">
               <button id="login" type="submit" class="mx-5">Connexion</button>
@@ -24,18 +25,17 @@ export default {
 
     data() {
         return {
-            message: "",                                        // on déclare une varibale de type string, vide par défault (contiendra les messages d'erreur envoyé par le back)
+            message: '',
+            email: '',
+            password: ''                                        // on déclare une varibale de type string, vide par défault (contiendra les messages d'erreur envoyé par le back)
         };
     },
 
     methods: {
         login() {                                               // fonction de connexion
-            const userName = this.$refs.email.value;
-            const password = this.$refs.password.value;
-
             notConnectedClient.post("/users/login", {           // envoi de la requête non authentifié avec notConnectedClient
-                email,
-                password
+                email : this.email,
+                password: this.password
             })
             .then((res) => {
             if(res.status === 200) {                            // si la requête est validée
