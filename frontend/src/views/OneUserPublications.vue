@@ -16,6 +16,7 @@
                     <router-link class="router-link" :to="{ name : 'OnePublication', params: { id: publication.publicationId }}">
                         <div class="titre px-5 py-3">{{publication.publicationTitre}}</div>
                         <div class="description px-5 py-3">{{publication.publicationDescription}}</div>
+                        <img :src="publication.publicationImageUrl" alt="image du post">
                     </router-link>
                     <v-divider class="mb-0" horizontal style="border: 1px solid #ffd7d7"></v-divider>
                     <div class="like-comment d-flex flex-md-row align-center">

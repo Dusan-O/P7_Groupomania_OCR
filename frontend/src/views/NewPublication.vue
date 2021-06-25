@@ -4,7 +4,7 @@
     <UserNav v-if="approuvedConnexion"/>
 
     <div v-if="approuvedConnexion" class="background d-flex flex-column">
-      <form @submit.prevent = newPublication()>
+      <form class="formCreate" @submit.prevent = newPublication() enctype="multipart/form-data">
         <div class="mb-2 mt-15 ml-15">Champs requis (*)</div>
         <textarea id="titre" class="mt-5" ref="titre" name="titre" placeholder="Titre de la publication... (*)" title="Renseignez un titre pour votre publication" required></textarea>
         <textarea id="description" class="mt-5" ref="description" name="description" placeholder="Description de la publication... (*)" title="Renseignez une description pour votre publication" required></textarea>
@@ -78,16 +78,19 @@ export default {
       const titre = this.$refs.titre.value;
       const description = this.$refs.description.value;
       const uploadImage = this.$refs.uploadImage.files[0];
+      console.log('imageUpload',uploadImage);
       
       const fileName = this.$refs.uploadImage.value;
       const lastDot = fileName.lastIndexOf(".") + 1;
       const extensionFile = fileName.substr(lastDot, fileName.length).toLowerCase();
       
-      if (extensionFile=="jpg" || extensionFile=="jpeg" || extensionFile=="png" || uploadImage === undefined){    // vérification de l'extension du fichier
-          let formData = new FormData();
+      if (extensionFile=="jpg" || extensionFile=="jpeg" || extensionFile=="png" || uploadImage === undefined){    // vérification de l'extension du fichier 
+          const formCreate = document.getElementsByClassName("formCreate")[0];
+          let formData = new FormData(formCreate);
+          console.log(formData);
           formData.append("userId", userId);
-          formData.append("titre", titre);
-          formData.append("description", description);
+          //formData.append("titre", titre);
+          //formData.append("description", description);
           formData.append("image", uploadImage);
 
           connectedClient.post('/publications', formData)

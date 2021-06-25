@@ -37,42 +37,6 @@ exports.signup = (req, res, next) => {
     });
 };  
 
-/* exports.signup = (req, res) => {
-
-    const nom = req.body.nom;
-    const prenom = req.body.prenom;
-    const email = req.body.email;
-    const departement = req.body.departement;
-    const poste = req.body.poste;
-    const password = req.body.password;
-
-    if (validator.isEmail(String(email))) {                                        // Si l'email passe la validation
-        bcrypt.hash(password, 10, (error, hash) => {
-                                                                                           // fonction asynchrone pour hasher le mot de passe
-                let sql = 'INSERT INTO users (nom, prenom, email, departement, poste, hash) VALUES (?, ?, ?, ?, ?, ?)';     // préparation de la requete SQL
-                //let inserts = [nom, prenom, email, departement, poste, hash];                                                       // utilisation des valeurs à insérer
-                //sql = mysql.format(sql, inserts);                                                                                   // assemblage final de la requête
-    
-                const userSignup = bdd.query(sql, (user, error) => {            // envoi de la requête a la base de données
-                    if (!error) {                                               // si aucune erreur après la requête
-                        res.status(201).json({                                  // on retourne
-                            message: "L'utilisateur a été créé avec succès !",  // on renvoi un message de confirmation
-                            token: jwt.sign(                                    // fonction sign qui prend les données que nous allons encoder à l'intérieur du token
-                                { userId: user.insertId, niveau_acces: 0 },     // création d'un objet avec le UserId et le niveau d'acces pour être sur de la correspondance
-                                process.env.JWT_AUTH_SECRET_TOKEN,              // clé secrète pour l'encodage
-                                { expiresIn: process.env.JWT_EXPIRATION }       // configuration de l'expiration du token
-                            )
-                        });
-                    } else {
-                        return res.status(409).json({ error : "Cet utilisateur existe déjà !"})      // erreur utilisateur déjà existant
-                    }
-                });
-            });
-    } else {
-        return res.status(400).json({ error : "Votre email est invalide !"})      // le format de l'email est invalide
-    }
-}; */
-
 /* LOGIN 
 *********************************************************/
 exports.login = (req, res, next) => {

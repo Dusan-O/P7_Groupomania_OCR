@@ -4,7 +4,7 @@ const auth = require('../middleware/auth.js');                             // im
 const multer = require('../middleware/multer-config.js');                  // importation de notre middleware multer
 
 router
-    .post('/', postController.createPublication)                      // Création d'une publication
+    .post('/', auth, multer, postController.createPublication)                      // Création d'une publication
     .get("/", auth, postController.getAllPublications)                              // Récupération de toutes les publications
     .get("/most-recent", auth, postController.getMostRecentPublications)            // Récupération des publications les plus récentes
     .get("/most-liked", auth, postController.getMostLikedPublications)              // Récupération des publications les plus aimées
@@ -17,3 +17,4 @@ router
     .post('/vote', auth, postController.votePublication);                           // Modification d'un vote (like/dislike/null)
 
 module.exports = router;        // on export le router du fichier
+

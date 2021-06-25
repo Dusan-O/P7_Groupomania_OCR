@@ -14,15 +14,14 @@ let decodeToken = function(req){                                                
 
 // CREATE PUBLICATION****************************************************************
 exports.createPublication = (req, res) => {
-
-    console.log(this.createPublication);
+   
 
     const tokenInfos = decodeToken(req);                                            // DECODETOKEN FUNCTION
     const userId = tokenInfos[0];                                                   // GET TOKEN'S USER ID
 
     const titre = req.body.titre;                                                   // GET TITLE POST
-    const description = req.body.description;                                       // GET DESCRIPTION POST
-
+    const description = req.body.description;   // GET DESCRIPTION POST
+    
     if (req.file !== undefined) {                                                                               // IF IMAGE
         const imageUrl = `${req.protocol}://${req.get("host")}/images/${req.file.filename}`;                    // PARAM THE URL
         let sql = "INSERT INTO publications (user_id, titre, description, image_url) VALUES (?, ?, ?, ? )";     // PREPARATION SQL REQUEST
@@ -33,11 +32,12 @@ exports.createPublication = (req, res) => {
             if (!error) {
                 res.status(201).json({ message: "Publication enregistrée" });
             } else {
-                res.status(400).json({ message: "Une erreur est survenue, la publication n'a pas été créée" });
+                res.status(400).json({ message: "AUne erreur est survenue, la publication n'a pas été créée" });
             }
         });
     } else {
-        const imageUrl = "";                                                                                    // IF NO IMAGE THEN EMPTY
+        const imageUrl = "";  
+                                                                                        // IF NO IMAGE THEN EMPTY
         let sql = "INSERT INTO publications (user_id, titre, description, image_url) VALUES (?, ?, ?, ? )";     // PREPARATION SQL REQUEST
         let inserts = [userId, titre, description, imageUrl];                                                   // USE VALUES
         sql = mysql.format(sql, inserts);                                                                       
@@ -46,7 +46,7 @@ exports.createPublication = (req, res) => {
             if (!error) {
                 res.status(201).json({ message: "Publication enregistrée" });
             } else {
-                res.status(400).json({ message: "Une erreur est survenue, la publication n'a pas été créée" });
+                res.status(400).json({ message: "BUne erreur est survenue, la publication n'a pas été créée" });
             }
         });
     } 
@@ -54,11 +54,9 @@ exports.createPublication = (req, res) => {
 
 // GET ALL PUBLICATIONS****************************************************************
 exports.getAllPublications = (req, res) => {
-
-
     const tokenInfos = decodeToken(req);        // DECODETOKEN
     const userId = tokenInfos[0];               // GET TOKEN'S USERID
-    const page = req.query.page;                // GET PAGE # 
+    const page = req.query.page;              // GET PAGE # 
     let offset = 10;                            // OFFSET DEFAUT 10 (LIMIT # POST)
 
     offset = offset * (page - 1);               // MULTIPLY OFFSET BY PAGE #
@@ -80,7 +78,7 @@ exports.getAllPublications = (req, res) => {
                         FROM publications AS publication
                         
                         JOIN users AS user ON publication.user_id = user.id
-                        GROUP BY publication.id ORDER BY publicationCreationDate DESC
+                        GROUP BY publicationId ORDER BY publicationCreationDate DESC
                         LIMIT 10 OFFSET ?;`;
 
     let inserts = [userId, offset];
@@ -88,7 +86,7 @@ exports.getAllPublications = (req, res) => {
 
     const getPublications = bdd.query(sql, (error, publications) => {
         if (error) {
-            res.status(400).json({ error: "Une erreur est survenue, aucune publication trouvée !" });
+            res.status(400).json({ error });
         } else {
             sql = `SELECT COUNT(*) FROM publications;`;
             const getPublicationsTotal = bdd.query(sql, (error, publicationsTotalCount) => {
@@ -359,7 +357,6 @@ exports.getOnePublication = (req, res, next) => {
 
 // DELETE PUBLICATION****************************************************************
 exports.deletePublication = (req, res) => {
-
 
     const tokenInfos = decodeToken(req);                                
     const userId = tokenInfos[0];                                       

@@ -33,9 +33,11 @@ export default {
 
     methods: {
         login() {                                               // fonction de connexion
+
+            console.log("email",this.email);
             notConnectedClient.post("/users/login", {           // envoi de la requête non authentifié avec notConnectedClient
                 email : this.email,
-                password: this.password
+                password:this.password
             })
             .then((res) => {
             if(res.status === 200) {                            // si la requête est validée
