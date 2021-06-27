@@ -27,12 +27,14 @@ exports.signup = (req, res, next) => {
      bcrypt.hash(user.password, 10) 
     .then((hash) => {
         user.password = hash
-        bdd.query(`INSERT INTO users SET ?`, user, (err, result, field) => {
+        bdd.query(`INSERT INTO users SET ?`, user, (err, results, field) => {
+            console.log(results);
             if (err) {
                 console.log(err)
                 return res.status(400).json("erreur")
             }
-            return res.status(201).json({message : 'Votre compte a bien été crée !'},)
+            return res.status(201).json({message : 'Votre compte a bien été crée !', token: jwt.sign({ userId: results.insertId, status: 201 },process.env.JWT_AUTH_SECRET_TOKEN,{ expiresIn: '24h' })
+        },)
         });
     });
 };  
@@ -54,7 +56,8 @@ exports.login = (req, res, next) => {
               } else {
                 console.log(userName, "s'est connecté")
                 let status = ''
-                if (results[0].isAdmin === 1) {
+                console.log(results);
+                if (results[0].niveau_acces === 1) {
                   status = 'admin'
                 } else {
                   status = 'membre'

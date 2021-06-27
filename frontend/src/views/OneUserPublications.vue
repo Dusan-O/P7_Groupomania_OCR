@@ -18,13 +18,13 @@
                         <div class="description px-5 py-3">{{publication.publicationDescription}}</div>
                         <img :src="publication.publicationImageUrl" alt="image du post">
                     </router-link>
-                    <v-divider class="mb-0" horizontal style="border: 1px solid #ffd7d7"></v-divider>
+                    <!-- <v-divider class="mb-0" horizontal style="border: 1px solid #ffd7d7"></v-divider>
                     <div class="like-comment d-flex flex-md-row align-center">
                         <div class="pl-1 pr-2"><v-btn text icon color="green lighten-2" disabled><v-icon>mdi-thumb-up</v-icon></v-btn>({{publication.publicationLikeCount}})</div>
                         <v-divider vertical style="border: 1px solid #ffd7d7"></v-divider>
                         <div class="pl-1"><v-btn text icon color="blac lighten-2" disabled><v-icon>mdi-thumb-down</v-icon></v-btn>({{publication.publicationDislikeCount}})</div>
                         <div class="ml-auto pr-2">Commentaires ({{publication.publicationCommentCount}})</div>
-                    </div>
+                    </div> -->
                 </v-list-item-content>
             </v-list-item>
         </v-card>

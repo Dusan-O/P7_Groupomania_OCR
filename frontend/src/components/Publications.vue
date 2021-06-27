@@ -4,6 +4,10 @@
             <div class="mt-15 mb-15 mx-auto text-h4 text-center">Aucune publication trouvée...</div>
         </div>
         <v-card class="mx-auto mt-8" v-for = "publication in publications" :key="publication.publicationId" elevation="24" width="700">
+                <v-img v-if='publication.publicationImageUrl'
+                height="250"
+                :src='publication.publicationImageUrl'
+                ></v-img>
             <v-list-item five-line class="px-0 py-0">
                 <v-list-item-content class="px-0 py-0">
                     <div class="nom-date px-5 py-3">Publié par {{publication.publicationCreateByUserPrenom}} {{publication.publicationCreateByUserNom}} | Le {{dateFormat(publication.publicationCreationDate)}}</div>
@@ -13,12 +17,18 @@
                         <div class="description px-5 py-3">{{publication.publicationDescription}}</div>
                     </router-link>
                     <v-divider class="mb-0" horizontal style="border: 1px solid #ffd7d7"></v-divider>
+                    <div class="pl-1" v-if='isAdmin()'>
+                        <v-btn @click="deletePublication(publication.publicationId)">
+                        Supprimer la publication
+                        </v-btn>
+                    </div>
+                    <!-- <v-divider class="mb-0" horizontal style="border: 1px solid #ffd7d7"></v-divider>
                     <div class="like-comment d-flex flex-md-row align-center">
                         <div class="pl-1 pr-2"><v-btn text icon color="green lighten-2" disabled><v-icon>mdi-thumb-up</v-icon></v-btn>({{publication.publicationLikeCount}})</div>
                         <v-divider vertical style="border: 1px solid #ffd7d7"></v-divider>
                         <div class="pl-1"><v-btn text icon color="blac lighten-2" disabled><v-icon>mdi-thumb-down</v-icon></v-btn>({{publication.publicationDislikeCount}})</div>
                         <div class="ml-auto pr-2">Commentaires ({{publication.publicationCommentCount}})</div>
-                    </div>
+                    </div> -->
                 </v-list-item-content>
             </v-list-item>
         </v-card>
@@ -90,7 +100,30 @@ export default {
             const event = new Date(date);
             const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' };
             return event.toLocaleDateString('fr-FR', options);
+        },
+        
+        deletePublication(id){                              // fonction qui gère la suppression d'une publication en fonction du niveau d'acces et du userId
+            const publicationId = id;
+            connectedClient.delete(`/publications/${publicationId}`)
+            .then((res) => {
+            if(res.status === 200) {
+                location.href = '/';
+            }
+        })
+        },
+
+
+        isAdmin(){
+            const userStorage = localStorage.getItem('groupomaniaUser');
+            if (userStorage){
+                const user = JSON.parse(userStorage);
+                console.log(user);
+                return user && user.status === 'admin';
+            }else{
+                return false;
+            }
         }
+        
     }
 }
 </script>

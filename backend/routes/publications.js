@@ -1,11 +1,11 @@
 const router = require('express').Router();
-const postController = require('../controllers/publications.js');        // importation du controller publications
-const auth = require('../middleware/auth.js');                             // importation de notre middleware d'authentification
-const multer = require('../middleware/multer-config.js');                  // importation de notre middleware multer
+const postController = require('../controllers/publications.js');                   // importation du controller publications
+const auth = require('../middleware/auth.js');                                      // importation de notre middleware d'authentification
+const multer = require('../middleware/multer-config.js');                           // importation de notre middleware multer
 
 router
     .post('/', auth, multer, postController.createPublication)                      // Création d'une publication
-    .get("/", auth, postController.getAllPublications)                              // Récupération de toutes les publications
+    .get('/', auth, postController.getAllPublications)                              // Récupération de toutes les publications
     .get("/most-recent", auth, postController.getMostRecentPublications)            // Récupération des publications les plus récentes
     .get("/most-liked", auth, postController.getMostLikedPublications)              // Récupération des publications les plus aimées
     .get("/most-commented", auth, postController.getMostCommentedPublications)      // Récupération des publications les plus commentées
@@ -16,5 +16,5 @@ router
     .delete("/commentaire/:id", auth, postController.deleteComment)                 // Suppression d'un commentaire
     .post('/vote', auth, postController.votePublication);                           // Modification d'un vote (like/dislike/null)
 
-module.exports = router;        // on export le router du fichier
+module.exports = router;                                                            // on exporte le router du fichier
 

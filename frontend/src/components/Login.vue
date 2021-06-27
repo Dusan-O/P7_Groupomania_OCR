@@ -41,9 +41,8 @@ export default {
             })
             .then((res) => {
             if(res.status === 200) {                            // si la requête est validée
-                const groupomaniaUser = {
-                    token: res.data.token
-                }
+                const groupomaniaUser = res.data
+                
                 localStorage.setItem('groupomaniaUser', JSON.stringify(groupomaniaUser));   //on stockant dans le localStorage un item avec le token
                 location.reload();                                                          // rechargement de la page pour re-analyser le localStorage
             }

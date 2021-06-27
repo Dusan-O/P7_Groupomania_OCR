@@ -10,20 +10,20 @@
       <v-card class="mx-auto mt-8" v-if="publication !== 0" :key="publication.publicationId" elevation="24" width="700">
           <v-list-item five-line class="px-0 py-0">
               <v-list-item-content class="px-0 py-0">
-                  <button v-if="sessionUserId === publication.publicationCreateByUserId || sessionUserAcces === 1" v-on:click="deletePublication(publication.publicationId)" class="supprimer">Supprimer la publication</button>
+                  <button v-if="sessionUserId === publication.publicationCreateByUserId || sessionUserAcces === 1" @click="deletePublication(publication.publicationId)" class="supprimer">Supprimer la publication</button>
                   <v-divider v-if="sessionUserId === publication.publicationCreateByUserId || sessionUserAcces === 1" horizontal></v-divider>
                   <div class="nom-date px-5 py-3">Publié par {{publication.publicationCreateByUserPrenom}} {{publication.publicationCreateByUserNom}} | Le {{dateFormat(publication.publicationCreationDate)}}</div>
                   <v-divider horizontal></v-divider>
                   <div class="titre px-5 py-3">{{publication.publicationTitre}}</div>
                   <div class="description px-5 py-3">{{publication.publicationDescription}}</div>
                   <v-img class="mx-auto mb-3" :src="publication.publicationImageUrl" :alt="publication.publicationTitre" max-width="650" height="auto"></v-img>
-                  <v-divider class="mb-0" horizontal style="border: 1px solid #ffd7d7"></v-divider>
+                  <!-- <v-divider class="mb-0" horizontal style="border: 1px solid #ffd7d7"></v-divider>
                   <div class="like-comment d-flex flex-md-row align-center">
                       <div class="pl-1 pr-2"><v-btn v-on:click="modifyLike" text icon :color="likeColor.color"><v-icon>mdi-thumb-up</v-icon></v-btn>({{publication.publicationLikeCount}})</div>
                       <v-divider vertical style="border: 1px solid #ffd7d7"></v-divider>
                       <div class="pl-1"><v-btn v-on:click="modifyDislike" text icon :color="dislikeColor.color"><v-icon>mdi-thumb-down</v-icon></v-btn>({{publication.publicationDislikeCount}})</div>
                       <div class="ml-auto pr-2">Commentaires ({{publication.publicationCommentCount}})</div>
-                  </div>
+                  </div> -->
               </v-list-item-content>
           </v-list-item>
       </v-card>

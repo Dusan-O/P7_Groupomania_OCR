@@ -61,34 +61,33 @@ exports.getAllPublications = (req, res) => {
 
     offset = offset * (page - 1);               // MULTIPLY OFFSET BY PAGE #
     
-    let sql = `SELECT   user.id AS publicationCreateByUserId,
-                        user.nom AS publicationCreateByUserNom,
-                        user.prenom AS publicationCreateByUserPrenom,
-                        publication.id AS publicationId,
-                        publication.creation_date AS publicationCreationDate,
-                        publication.titre AS publicationTitre,
-                        publication.description AS publicationDescription,
-                        publication.image_url AS publicationImageUrl,
-
-                        (SELECT COUNT(if(vote = 2, 1, NULL)) FROM votes WHERE publication_id = publication.id) AS publicationLikeCount,
-                        (SELECT COUNT(if(vote = 3, 1, NULL)) FROM votes WHERE publication_id = publication.id) AS publicationDislikeCount,
-                        (SELECT COUNT(if(publication_id = publication.id, 1, NULL)) FROM commentaires WHERE publication_id = publication.id) AS publicationCommentCount,
-                        (SELECT vote FROM votes WHERE user_id = ? AND publicationId = votes.publication_id) AS userVote
-
-                        FROM publications AS publication
+    let sql = `SELECT   users.id AS publicationCreateByUserId,
+                        users.nom AS publicationCreateByUserNom,
+                        users.prenom AS publicationCreateByUserPrenom,
+                        publications.id AS publicationId,
+                        publications.creation_date AS publicationCreationDate,
+                        publications.titre AS publicationTitre,
+                        publications.description AS publicationDescription,
+                        publications.image_url AS publicationImageUrl
                         
-                        JOIN users AS user ON publication.user_id = user.id
-                        GROUP BY publicationId ORDER BY publicationCreationDate DESC
-                        LIMIT 10 OFFSET ?;`;
-
-    let inserts = [userId, offset];
+                        FROM publications
+                        
+                        INNER JOIN users ON publications.user_id = users.id
+                        LIMIT 10 OFFSET ?
+                        ;`;
+                        
+                        //GROUP BY publications.id ORDER BY publicationCreationDate DESC
+    console.log(sql);
+    let inserts = [offset];
+    console.log(inserts);
     sql = mysql.format(sql, inserts);
 
     const getPublications = bdd.query(sql, (error, publications) => {
+        console.log(publications);
         if (error) {
-            res.status(400).json({ error });
+            return res.status(400).json({ error });
         } else {
-            sql = `SELECT COUNT(*) FROM publications;`;
+            sql = `SELECT COUNT(*) as publicationsCount FROM publications;`;
             const getPublicationsTotal = bdd.query(sql, (error, publicationsTotalCount) => {
                 if (error) {
                     res.status(400).json({ error: "Une erreur est survenue, aucune publication trouvée !" });
@@ -111,25 +110,22 @@ exports.getMostRecentPublications = (req, res) => {
 
     offset = offset * (page - 1);               
 
-    let sql = `SELECT   user.id AS publicationCreateByUserId,
-                        user.nom AS publicationCreateByUserNom,
-                        user.prenom AS publicationCreateByUserPrenom,
-                        publication.id AS publicationId,
-                        publication.creation_date AS publicationCreationDate,
-                        publication.titre AS publicationTitre,
-                        publication.description AS publicationDescription,
-                        publication.image_url AS publicationImageUrl,
-
-                        (SELECT COUNT(if(vote = 2, 1, NULL)) FROM votes WHERE publication_id = publication.id) AS publicationLikeCount,
-                        (SELECT COUNT(if(vote = 3, 1, NULL)) FROM votes WHERE publication_id = publication.id) AS publicationDislikeCount,
-                        (SELECT COUNT(if(publication_id = publication.id, 1, NULL)) FROM commentaires WHERE publication_id = publication.id) AS publicationCommentCount,
-                        (SELECT vote FROM votes WHERE user_id = ? AND publicationId = votes.publication_id) AS userVote
-
-                        FROM publications AS publication
-
-                        JOIN users AS user ON publication.user_id = user.id
-                        GROUP BY publication.id ORDER BY publicationCreationDate DESC
-                        LIMIT 10 OFFSET ?;`;
+    let sql = `SELECT   
+    users.id AS publicationCreateByUserId,
+    users.nom AS publicationCreateByUserNom,
+    users.prenom AS publicationCreateByUserPrenom,
+    publications.id AS publicationId,
+    publications.creation_date AS publicationCreationDate,
+    publications.titre AS publicationTitre,
+    publications.description AS publicationDescription,
+    publications.image_url AS publicationImageUrl
+    
+    FROM publications
+    
+    INNER JOIN users ON publications.user_id = users.id 
+    ORDER BY publications.creation_date DESC
+    LIMIT 10 OFFSET ?
+    ;`;
 
     let inserts = [userId, offset];
     sql = mysql.format(sql, inserts);
@@ -138,7 +134,7 @@ exports.getMostRecentPublications = (req, res) => {
         if (error) {
             res.status(400).json({ error: "Une erreur est survenue, aucune publication trouvée !" });
         } else {
-            sql = `SELECT COUNT(*) FROM publications;`;
+            sql = `SELECT COUNT(*) as publicationsCount FROM publications;`;
             const getPublicationsTotal = bdd.query(sql, (error, publicationsTotalCount) => {
                 if (error) {
                     res.status(400).json({ error: "Une erreur est survenue, aucune publication trouvée !" });
@@ -295,25 +291,33 @@ exports.getOnePublication = (req, res, next) => {
     const tokenInfos = decodeToken(req);        
     const userId = tokenInfos[0];               
     const publicationId = req.params.id;        
+    const sqlPublication = `SELECT   user.id AS publicationCreateByUserId,
+                        user.nom AS publicationCreateByUserNom,
+                        user.prenom AS publicationCreateByUserPrenom,
+                        publication.id AS publicationId,
+                        publication.creation_date AS publicationCreationDate,
+                        publication.titre AS publicationTitre,
+                        publication.description AS publicationDescription,
+                        publication.image_url AS publicationImageUrl,
 
-    const sqlPublication = `SELECT  user.id AS publicationCreateByUserId,
-                                    user.nom AS publicationCreateByUserNom,
-                                    user.prenom AS publicationCreateByUserPrenom,
-                                    publication.id AS publicationId,
-                                    publication.creation_date AS publicationCreationDate,
-                                    publication.titre AS publicationTitre,
-                                    publication.description AS publicationDescription,
-                                    publication.image_url AS publicationImageUrl,
+                        (SELECT COUNT(if(vote = 2, 1, NULL)) FROM votes WHERE publication_id = publication.id) AS publicationLikeCount,
+                        (SELECT COUNT(if(vote = 3, 1, NULL)) FROM votes WHERE publication_id = publication.id) AS publicationDislikeCount,
+                        (SELECT COUNT(if(publication_id = publication.id, 1, NULL)) FROM commentaires WHERE publication_id = publication.id) AS publicationCommentCount,
+                        (SELECT vote FROM votes WHERE user_id = ? AND publicationId = votes.publication_id) AS userVote
 
-                                    (SELECT COUNT(if(vote = 2, 1, NULL)) FROM votes WHERE publication_id = publication.id) AS publicationLikeCount,
-                                    (SELECT COUNT(if(vote = 3, 1, NULL)) FROM votes WHERE publication_id = publication.id) AS publicationDislikeCount,
-                                    (SELECT COUNT(if(publication_id = publication.id, 1, NULL)) FROM commentaires WHERE publication_id = publication.id) AS publicationCommentCount,
-                                    (SELECT vote FROM votes WHERE user_id = ? AND publicationId = votes.publication_id) AS userVote
-
-                                    FROM publications AS publication
-
-                                    JOIN users AS user ON publication.user_id = user.id
-                                    WHERE publication.id = ? GROUP BY publication.id;`;
+                        FROM publications AS publication
+                        
+                        JOIN users AS user ON publication.user_id = user.id
+                        WHERE publication.id = ? 
+                        GROUP BY publication.id,
+                        user.id,
+                        user.nom,
+                        user.prenom,
+                        publication.creation_date,
+                        publication.titre,
+                        publication.description,
+                        publication.image_url
+                        ORDER BY publicationCreationDate DESC;`;
 
     const sqlCommentaires = `SELECT user.id AS commentaireCreateByUserId,
                                     user.nom AS commentaireCreateByUserNom,
@@ -403,7 +407,8 @@ exports.deletePublication = (req, res) => {
         let role = "Utilisateur";
 
         const publicationImageUrl = bdd.query(firstSql, (error, image) => {          // SEND REQUEST TO DB
-            if (!error) {
+            if (image && !error) {
+                console.log(image);
                 if(image[0].image_url !== "") {
                     const filename = image[0].image_url.split("/images/")[1];           
                     fs.unlink(`images/${filename}`, () => {                        
@@ -420,7 +425,7 @@ exports.deletePublication = (req, res) => {
                         res.status(400).json({ message: "Une erreur est survenue, la publication n'a pas été supprimée" });
                     }
                 });
-            } else {
+            } else { 
                 res.status(400).json({ message: "Une erreur est survenue, la publication n'a pas été trouvée" });
             }
         });
